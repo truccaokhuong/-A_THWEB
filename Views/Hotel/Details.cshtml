@@ -1,0 +1,300 @@
+<!-- Views/Hotel/Details.cshtml -->
+@model Hotel
+@{
+    ViewData["Title"] = Model.Name;
+    var checkIn = ViewBag.CheckIn;
+    var checkOut = ViewBag.CheckOut;
+    var guests = ViewBag.Guests;
+    var nights = (checkOut - checkIn).Days;
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>@Model.Name</h1>
+            <p>
+                <i class="fas fa-map-marker-alt text-primary me-1"></i>
+                @Model.Address, @Model.City, @Model.Country
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <button class="btn btn-outline-primary me-2">
+                <i class="far fa-heart me-1"></i> Save
+            </button>
+            <button class="btn btn-outline-primary">
+                <i class="fas fa-share-alt me-1"></i> Share
+            </button>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/placeholder.jpg" : Model.ImageUrl)" 
+                         class="img-fluid rounded" alt="@Model.Name">
+                </div>
+                @if (Model.Rooms != null && Model.Rooms.Any())
+                {
+                    foreach (var room in Model.Rooms.Take(4))
+                    {
+                        <div class="col-md-3 mb-3">
+                            <img src="@(string.IsNullOrEmpty(room.ImageUrl) ? "/images/placeholder.jpg" : room.ImageUrl)" 
+                                 class="img-fluid rounded" alt="@room.Name">
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Price for @nights nights</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <div class="fw-bold">Check-in</div>
+                            <div>@checkIn.ToString("MMM d, yyyy")</div>
+                        </div>
+                        <div>
+                            <div class="fw-bold">Check-out</div>
+                            <div>@checkOut.ToString("MMM d, yyyy")</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="fw-bold">Guests</div>
+                        <div>@guests @(guests == 1 ? "adult" : "adults")</div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <div>@nights nights</div>
+                        <div>$@(Model.Rooms?.OrderBy(r => r.Price).FirstOrDefault()?.Price * nights ?? 0)</div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <div>Taxes and fees</div>
+                        <div>$@(Model.Rooms?.OrderBy(r => r.Price).FirstOrDefault()?.Price * nights * 0.15m ?? 0)</div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between fw-bold">
+                        <div>Total</div>
+                        <div>$@(Model.Rooms?.OrderBy(r => r.Price).FirstOrDefault()?.Price * nights * 1.15m ?? 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>About this property</h3>
+                    <p>@Model.Description</p>
+                    
+                    <h4 class="mt-4">Property amenities</h4>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            @if (Model.HasFreeWifi)
+                            {
+                                <div class="mb-2">
+                                    <i class="fas fa-wifi text-primary me-2"></i> Free WiFi
+                                </div>
+                            }
+                            @if (Model.HasParking)
+                            {
+                                <div class="mb-2">
+                                    <i class="fas fa-parking text-primary me-2"></i> Free parking
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            @if (Model.HasBreakfast)
+                            {
+                                <div class="mb-2">
+                                    <i class="fas fa-coffee text-primary me-2"></i> Breakfast included
+                                </div>
+                            }
+                            <div class="mb-2">
+                                <i class="fas fa-concierge-bell text-primary me-2"></i> 24-hour front desk
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>Available rooms</h3>
+                    
+                    @if (Model.Rooms != null && Model.Rooms.Any())
+                    {
+                        foreach (var room in Model.Rooms)
+                        {
+                            <div class="card mb-3">
+                                <div class="row g-0">
+                                    <div class="col-md-4">
+                                        <img src="@(string.IsNullOrEmpty(room.MainImageUrl) ? "/images/placeholder.jpg" : room.MainImageUrl)" 
+                                             class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="@room.RoomType">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="card-body">
+                                            <h5 class="card-title">@room.RoomType</h5>
+                                            <p class="card-text">@room.Description</p>
+                                            
+                                            <div class="mt-3">
+                                                <div class="mb-1">
+                                                    <i class="fas fa-user me-2"></i> Sleeps @room.MaxOccupancy
+                                                </div>
+                                                @if (room.HasAirConditioning)
+                                                {
+                                                    <div class="mb-1">
+                                                        <i class="fas fa-snowflake me-2"></i> Air conditioning
+                                                    </div>
+                                                }
+                                                @if (room.HasPrivateBathroom)
+                                                {
+                                                    <div class="mb-1">
+                                                        <i class="fas fa-bath me-2"></i> Private bathroom
+                                                    </div>
+                                                }
+                                                @if (room.HasTV)
+                                                {
+                                                    <div class="mb-1">
+                                                        <i class="fas fa-tv me-2"></i> TV
+                                                    </div>
+                                                }
+                                                @if (room.HasWifi)
+                                                {
+                                                    <div class="mb-1">
+                                                        <i class="fas fa-wifi me-2"></i> Wifi
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card-body text-end">
+                                            <div class="text-muted mb-2">Price for @nights nights</div>
+                                            <div class="fw-bold fs-4">$@(room.Price * nights)</div>
+                                            <div class="text-muted small mb-3">includes taxes & fees</div>
+                                            
+                                            <a href="@Url.Action("Create", "Booking", new { roomId = room.Id, checkIn, checkOut, guests })" 
+                                               class="btn btn-primary w-100">Book now</a>
+                                            
+                                            <div class="text-success mt-2">
+                                                <small><i class="fas fa-check-circle me-1"></i> Free cancellation</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>No rooms available for the selected dates.</p>
+                    }
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="mb-0">Guest reviews</h3>
+                        <div class="bg-primary text-white rounded-pill px-3 py-2 fs-5">
+                            @Model.Rating
+                        </div>
+                    </div>
+                    
+                    @if (Model.Reviews != null && Model.Reviews.Any())
+                    {
+                        <div class="row">
+                            @foreach (var review in Model.Reviews.Take(4))
+                            {
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <h5 class="card-title">@review.ReviewerName</h5>
+                                                <div class="badge bg-primary">@review.Rating</div>
+                                            </div>
+                                            <p class="card-text">@review.Comment</p>
+                                            <p class="card-text">
+                                                <small class="text-muted">
+                                                    Reviewed on @review.Date.ToString("MMM d, yyyy")
+                                                </small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        
+                        <a href="#" class="btn btn-outline-primary">See all reviews</a>
+                    }
+                    else
+                    {
+                        <p>No reviews yet. Be the first to leave a review!</p>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4>Location</h4>
+                    <div class="ratio ratio-4x3 mt-3">
+                        <img src="/images/map-placeholder.jpg" class="img-fluid rounded" alt="Map">
+                    </div>
+                    <p class="mt-3">
+                        <i class="fas fa-map-marker-alt text-primary me-1"></i>
+                        @Model.Address, @Model.City, @Model.Country
+                    </p>
+                    <div class="mt-3">
+                        <h5>What's nearby</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-utensils text-primary me-2"></i>
+                                Restaurants within 0.5 miles
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-shopping-bag text-primary me-2"></i>
+                                Shopping within 1 mile
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-subway text-primary me-2"></i>
+                                Public transit within 0.5 miles
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h4>Property policies</h4>
+                    <div class="mt-3">
+                        <h5>Check-in</h5>
+                        <p>From 3:00 PM</p>
+                        
+                        <h5>Check-out</h5>
+                        <p>Until 11:00 AM</p>
+                        
+                        <h5>Cancellation policy</h5>
+                        <p>Free cancellation up to 24 hours before check-in</p>
+                        
+                        <h5>Children and extra beds</h5>
+                        <p>Children of all ages are welcome</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

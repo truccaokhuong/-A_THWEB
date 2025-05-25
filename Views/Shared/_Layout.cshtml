@@ -1,0 +1,369 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - EzBooking</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    
+    <style>
+        :root {
+            --primary-blue: #1a365d;
+            --secondary-blue: #2c5aa0;
+            --accent-blue: #3182ce;
+            --light-blue: #e6f3ff;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: white;
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .search-form {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+        
+        .search-input {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+        
+        .search-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 0.2rem rgba(49,130,206,0.25);
+        }
+        
+        .btn-search {
+            background: var(--accent-blue);
+            border: none;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-search:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+        }
+        
+        .hotel-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .hotel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .hotel-image {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .hotel-rating {
+            background: var(--accent-blue);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .price-tag {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+        
+        .offer-card {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            height: 100%;
+        }
+        
+        .offer-card h4 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-offer {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-offer:hover {
+            background: white;
+            color: #ff6b6b;
+        }
+        
+        .destination-card {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            height: 250px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .destination-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .destination-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            padding: 2rem 1.5rem 1.5rem;
+        }
+        
+        .stats-section {
+            background: var(--light-blue);
+            padding: 3rem 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+        
+        .nav-tabs {
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: #718096;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--accent-blue);
+            border-bottom: 3px solid var(--accent-blue);
+            background: none;
+        }
+        
+        .footer {
+            background: var(--primary-blue);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+        
+        .suggestion-item:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-blue);">
+            <div class="container">
+                <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                    <i class="fas fa-bed me-2"></i>EzBooking
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <div class="navbar-nav me-auto">
+                        <a class="nav-link" href="@Url.Action("Index", "Hotel")">
+                            <i class="fas fa-bed me-1"></i>Stays
+                        </a>
+                        <a class="nav-link" href="#" onclick="alert('Coming soon!')">
+                            <i class="fas fa-plane me-1"></i>Flights
+                        </a>
+                        <a class="nav-link" href="#" onclick="alert('Coming soon!')">
+                            <i class="fas fa-plus me-1"></i>Flight + Hotel
+                        </a>
+                        <a class="nav-link" href="#" onclick="alert('Coming soon!')">
+                            <i class="fas fa-car me-1"></i>Car rentals
+                        </a>
+                        <a class="nav-link" href="#" onclick="alert('Coming soon!')">
+                            <i class="fas fa-map-marker-alt me-1"></i>Attractions
+                        </a>
+                        <a class="nav-link" href="#" onclick="alert('Coming soon!')">
+                            <i class="fas fa-taxi me-1"></i>Airport taxis
+                        </a>
+                    </div>
+                    
+                    <div class="navbar-nav">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle me-2" type="button" data-bs-toggle="dropdown">
+                                USD
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="changeCurrency('USD')">USD</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="changeCurrency('EUR')">EUR</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="changeCurrency('VND')">VND</a></li>
+                            </ul>
+                        </div>
+                        <a class="btn btn-outline-light me-2" href="#" onclick="alert('Coming soon!')">List your property</a>
+                        <a class="btn btn-outline-light me-2" href="#" onclick="alert('Coming soon!')">Register</a>
+                        <a class="btn btn-light" href="#" onclick="alert('Coming soon!')">Sign in</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5><i class="fas fa-bed me-2"></i>EzBooking</h5>
+                    <p>Your trusted travel companion for finding the perfect accommodation anywhere in the world.</p>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" class="text-light"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h6>Support</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">Help Center</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Contact Us</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Safety Information</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Cancellation Options</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6>Company</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">About Us</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Careers</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Press</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6>Partners</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">Partner Hub</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Affiliate Program</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Property Owners</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Travel Agents</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2024 EzBooking. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-light text-decoration-none me-3">Privacy Policy</a>
+                    <a href="#" class="text-light text-decoration-none me-3">Terms of Service</a>
+                    <a href="#" class="text-light text-decoration-none">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <script>
+        // Global functions
+        function changeCurrency(currency) {
+            // Store currency preference
+            localStorage.setItem('selectedCurrency', currency);
+            // Update button text
+            $('.dropdown-toggle:contains("USD"), .dropdown-toggle:contains("EUR"), .dropdown-toggle:contains("VND")')
+                .text(currency);
+            console.log('Currency changed to:', currency);
+        }
+        
+        // Load saved currency on page load
+        $(document).ready(function() {
+            var savedCurrency = localStorage.getItem('selectedCurrency');
+            if (savedCurrency) {
+                changeCurrency(savedCurrency);
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        $('a[href^="#"]').on('click', function(event) {
+            var target = $(this.getAttribute('href'));
+            if( target.length ) {
+                event.preventDefault();
+                $('html, body').stop().animate({
+                    scrollTop: target.offset().top - 100
+                }, 1000);
+            }
+        });
+    </script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

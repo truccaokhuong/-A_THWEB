@@ -1,0 +1,173 @@
+<!-- Views/Booking/Confirmation.cshtml -->
+@model Booking
+@{
+    ViewData["Title"] = "Booking Confirmed";
+    var nights = (Model.CheckOutDate - Model.CheckInDate).Days;
+}
+
+<div class="container">
+    <div class="card my-5">
+        <div class="card-body text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+            </div>
+            <h1 class="mb-4">Your booking is confirmed!</h1>
+            <p class="lead">Confirmation number: <strong>EZB-@(10000 + Model.Id)</strong></p>
+            <p>A confirmation email has been sent to <strong>@Model.GuestEmail</strong></p>
+            
+            <div class="mt-4">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary me-2">Return to Home</a>
+                <button class="btn btn-outline-primary" onclick="window.print()">
+                    <i class="fas fa-print me-2"></i> Print confirmation
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>Booking details</h3>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h5>Check-in</h5>
+                                <p class="mb-0">@Model.CheckInDate.ToString("dddd, MMMM d, yyyy")</p>
+                                <p class="text-muted">From 3:00 PM</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h5>Check-out</h5>
+                                <p class="mb-0">@Model.CheckOutDate.ToString("dddd, MMMM d, yyyy")</p>
+                                <p class="text-muted">Until 11:00 AM</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Total length of stay</h5>
+                        <p>@nights @(nights == 1 ? "night" : "nights")</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Guest information</h5>
+                        <p class="mb-1">@Model.GuestName</p>
+                        <p class="mb-1">@Model.GuestEmail</p>
+                        @if (!string.IsNullOrEmpty(Model.GuestPhone))
+                        {
+                            <p class="mb-0">@Model.GuestPhone</p>
+                        }
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(Model.SpecialRequests))
+                    {
+                        <div class="mb-4">
+                            <h5>Special requests</h5>
+                            <p>@Model.SpecialRequests</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h3>Your stay at @Model.Room.Hotel.Name</h3>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <img src="@(string.IsNullOrEmpty(Model.Room.ImageUrl) ? "/images/placeholder.jpg" : Model.Room.ImageUrl)" 
+                                 class="img-fluid rounded" alt="@Model.Room.Name">
+                        </div>
+                        <div class="col-md-8">
+                            <h4>@Model.Room.Name</h4>
+                            <p>@Model.Room.Description</p>
+                            
+                            <div class="mt-3">
+                                <div class="mb-1">
+                                    <i class="fas fa-user me-2"></i> Sleeps @Model.Room.Capacity
+                                </div>
+                                @if (Model.Room.HasAirConditioning)
+                                {
+                                    <div class="mb-1">
+                                        <i class="fas fa-snowflake me-2"></i> Air conditioning
+                                    </div>
+                                }
+                                @if (Model.Room.HasPrivateBathroom)
+                                {
+                                    <div class="mb-1">
+                                        <i class="fas fa-bath me-2"></i> Private bathroom
+                                    </div>
+                                }
+                                @if (Model.Room.HasFlatScreenTV)
+                                {
+                                    <div class="mb-1">
+                                        <i class="fas fa-tv me-2"></i> Flat-screen TV
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5>Hotel address</h5>
+                        <p>
+                            <i class="fas fa-map-marker-alt text-primary me-1"></i>
+                            @Model.Room.Hotel.Address, @Model.Room.Hotel.City, @Model.Room.Hotel.Country
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Price summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <div class="fw-bold">@Model.Room.Name</div>
+                            <div class="text-muted">@nights @(nights == 1 ? "night" : "nights"), @Model.NumberOfGuests @(Model.NumberOfGuests == 1 ? "guest" : "guests")</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold">$@(Model.TotalPrice * 0.87m)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <div>Taxes and fees (15%)</div>
+                        <div>$@(Model.TotalPrice * 0.13m)</div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between fw-bold fs-5">
+                        <div>Total</div>
+                        <div>$@Model.TotalPrice</div>
+                    </div>
+                    
+                    <div class="alert alert-success mt-3">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Free cancellation until 24 hours before check-in
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5>Need help with your booking?</h5>
+                    <p>Our customer service team is available 24/7 to assist you with any questions or changes to your reservation.</p>
+                    <div class="d-grid">
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-headset me-2"></i> Contact support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

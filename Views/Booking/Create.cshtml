@@ -1,0 +1,153 @@
+<!-- Views/Booking/Create.cshtml -->
+@model Booking
+@{
+    ViewData["Title"] = "Book Your Stay";
+    var room = ViewBag.Room;
+    var nights = ViewBag.Nights;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>Complete your booking</h1>
+            <p class="text-muted">You're just a few steps away from your reservation</p>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4>Your booking details</h4>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="fw-bold">Check-in</div>
+                                <div>@Model.CheckInDate.ToString("dddd, MMMM d, yyyy")</div>
+                                <div class="text-muted">From 3:00 PM</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="fw-bold">Check-out</div>
+                                <div>@Model.CheckOutDate.ToString("dddd, MMMM d, yyyy")</div>
+                                <div class="text-muted">Until 11:00 AM</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="fw-bold">Total length of stay</div>
+                        <div>@nights @(nights == 1 ? "night" : "nights")</div>
+                    </div>
+                    <div>
+                        <div class="fw-bold">You selected</div>
+                        <div>@room.Name</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4>Enter your details</h4>
+                    <form asp-action="Create" method="post">
+                        <input type="hidden" asp-for="RoomId" />
+                        <input type="hidden" asp-for="CheckInDate" />
+                        <input type="hidden" asp-for="CheckOutDate" />
+                        <input type="hidden" asp-for="NumberOfGuests" />
+                        <input type="hidden" asp-for="NumberOfRooms" />
+                        <input type="hidden" asp-for="TotalPrice" />
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="GuestName" class="form-label">Full Name</label>
+                                <input asp-for="GuestName" class="form-control" required />
+                                <span asp-validation-for="GuestName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="GuestEmail" class="form-label">Email</label>
+                                <input asp-for="GuestEmail" type="email" class="form-control" required />
+                                <span asp-validation-for="GuestEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="GuestPhone" class="form-label">Phone Number</label>
+                            <input asp-for="GuestPhone" class="form-control" />
+                            <span asp-validation-for="GuestPhone" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="SpecialRequests" class="form-label">Special Requests</label>
+                            <textarea asp-for="SpecialRequests" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="SpecialRequests" class="text-danger"></span>
+                            <div class="form-text">Special requests cannot be guaranteed – but the property will do its best to meet your needs.</div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="termsCheck" required />
+                            <label class="form-check-label" for="termsCheck">
+                                I agree to the <a href="#">terms and conditions</a>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg">Complete Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Price summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <div class="fw-bold">@room.Name</div>
+                            <div class="text-muted">@nights @(nights == 1 ? "night" : "nights"), @Model.NumberOfGuests @(Model.NumberOfGuests == 1 ? "guest" : "guests")</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold">$@(room.PricePerNight * nights)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <div>Taxes and fees (15%)</div>
+                        <div>$@(room.PricePerNight * nights * 0.15m)</div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between fw-bold fs-5">
+                        <div>Total</div>
+                        <div>$@(room.PricePerNight * nights * 1.15m)</div>
+                    </div>
+                    
+                    <div class="alert alert-success mt-3">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Free cancellation until 24 hours before check-in
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5>@room.Hotel.Name</h5>
+                    <div class="d-flex mb-2">
+                        @for (int i = 0; i < Math.Floor(room.Hotel.Rating); i++)
+                        {
+                            <i class="fas fa-star text-warning"></i>
+                        }
+                        @if (room.Hotel.Rating % 1 != 0)
+                        {
+                            <i class="fas fa-star-half-alt text-warning"></i>
+                        }
+                    </div>
+                    <p>
+                        <i class="fas fa-map-marker-alt text-primary me-1"></i>
+                        @room.Hotel.Address, @room.Hotel.City, @room.Hotel.Country
+                    </p>
+                    <img src="@(string.IsNullOrEmpty(room.Hotel.ImageUrl) ? "/images/placeholder.jpg" : room.Hotel.ImageUrl)" 
+                         class="img-fluid rounded mt-2" alt="@room.Hotel.Name">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

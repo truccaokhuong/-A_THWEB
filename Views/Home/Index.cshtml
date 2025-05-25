@@ -1,0 +1,349 @@
+﻿@model ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "EzBooking - Find deals for any season";
+}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container hero-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="display-4 fw-bold mb-3">Find deals for any season</h1>
+                <p class="lead mb-4">From cozy bed & breakfasts to luxury hotels</p>
+                
+                <!-- Search Form -->
+                <div class="search-form">
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#stays" data-bs-toggle="tab">
+                                <i class="fas fa-bed me-2"></i>Stays
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#flights" data-bs-toggle="tab">
+                                <i class="fas fa-plane me-2"></i>Flights
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="stays">
+                            @using (Html.BeginForm("Search", "Home", FormMethod.Post, new { @class = "row g-3" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        @Html.TextBoxFor(m => m.SearchDestination, new { 
+                                            @class = "form-control search-input", 
+                                            id = "destination", 
+                                            placeholder = "Where are you going?",
+                                            autocomplete = "off"
+                                        })
+                                        <label for="destination"><i class="fas fa-map-marker-alt me-2"></i>Where are you going?</label>
+                                        <div id="destination-suggestions" class="position-absolute w-100 bg-white border rounded shadow-sm" style="z-index: 1000; display: none; top: 100%;"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-floating">
+                                        @Html.TextBoxFor(m => m.CheckInDate, "{0:yyyy-MM-dd}", new { 
+                                            @class = "form-control search-input", 
+                                            id = "checkin", 
+                                            type = "date"
+                                        })
+                                        <label for="checkin">Check-in</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-floating">
+                                        @Html.TextBoxFor(m => m.CheckOutDate, "{0:yyyy-MM-dd}", new { 
+                                            @class = "form-control search-input", 
+                                            id = "checkout", 
+                                            type = "date"
+                                        })
+                                        <label for="checkout">Check-out</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle w-100 h-100" type="button" data-bs-toggle="dropdown" id="guestDropdown">
+                                            <i class="fas fa-user me-2"></i><span id="guestText">@Model.Guests adults</span>
+                                        </button>
+                                        @Html.HiddenFor(m => m.Guests, new { id = "guestCount" })
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item guest-option" href="#" data-guests="1">1 adult</a></li>
+                                            <li><a class="dropdown-item guest-option" href="#" data-guests="2">2 adults</a></li>
+                                            <li><a class="dropdown-item guest-option" href="#" data-guests="3">3 adults</a></li>
+                                            <li><a class="dropdown-item guest-option" href="#" data-guests="4">4+ adults</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary btn-search btn-lg">
+                                        <i class="fas fa-search me-2"></i>Search
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                        <div class="tab-pane fade" id="flights">
+                            <p class="text-muted">Flight search coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Offers Section -->
+@if (Model.Offers.Any())
+{
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title">Offers</h2>
+            <p class="text-muted mb-4">Promotions, deals, and special offers for you</p>
+            
+            <div class="row g-4">
+                @foreach (var offer in Model.Offers.Take(2))
+                {
+                    <div class="col-md-6">
+                        <div class="offer-card" style="background-image: url('@offer.ImageUrl'); background-size: cover; background-blend-mode: overlay;">
+                            <h4>@offer.Title</h4>
+                            <p>@offer.Description</p>
+                            @if (!string.IsNullOrEmpty(offer.PromoCode))
+                            {
+                                <p><strong>Use code: @offer.PromoCode</strong></p>
+                            }
+                            <button class="btn btn-offer" onclick="applyOffer('@offer.PromoCode')">
+                                Save @offer.DiscountPercentage%
+                            </button>
+                        </div>
+                    </div>
+                }
+                
+                @if (Model.Offers.Count < 2)
+                {
+                    <div class="col-md-6">
+                        <div class="offer-card" style="background: linear-gradient(45deg, #667eea, #764ba2);">
+                            <h4>Weekend Escape</h4>
+                            <p>Book a weekend stay and get a free breakfast for two.</p>
+                            <button class="btn btn-offer">Save on stays</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Featured Hotels Section -->
+@if (Model.FeaturedHotels.Any())
+{
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="section-title">Featured Hotels</h2>
+            <p class="text-muted mb-4">Discover our most popular accommodations</p>
+            
+            <div class="row g-4">
+                @foreach (var hotel in Model.FeaturedHotels.Take(6))
+                {
+                    <div class="col-md-4">
+                        <div class="card hotel-card" onclick="location.href='@Url.Action("Details", "Hotel", new { id = hotel.Id })'">
+                            <img src="@(!string.IsNullOrEmpty(hotel.ImageUrl) ? hotel.ImageUrl : "/images/hotels/default-hotel.jpg")" 
+                                 class="hotel-image" alt="@hotel.Name" 
+                                 onerror="this.src='/images/hotels/default-hotel.jpg'">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0">@hotel.Name</h5>
+                                    <span class="hotel-rating">@hotel.Rating.ToString("F1")</span>
+                                </div>
+                                <p class="text-muted mb-2">
+                                    <i class="fas fa-map-marker-alt me-1"></i>@hotel.City, @hotel.Country
+                                </p>
+                                <p class="card-text">@Html.Raw(hotel.Description.Length > 100 ? hotel.Description.Substring(0, 100) + "..." : hotel.Description)</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price-tag">
+                                        @if (hotel.Rooms.Any())
+                                        {
+                                            var minPrice = hotel.Rooms.Min(r => r.Price);
+                                            <text>$@minPrice.ToString("F0")/night</text>
+                                        }
+                                        else
+                                        {
+                                            <text>From $99/night</text>
+                                        }
+                                    </span>
+                                    <button class="btn btn-primary" onclick="event.stopPropagation(); location.href='@Url.Action("Details", "Hotel", new { id = hotel.Id })'">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Quick Trip Planner -->
+@if (Model.QuickDestinations.Any())
+{
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title">Quick and easy trip planner</h2>
+            <p class="text-muted mb-4">Pick a vibe and explore the top destinations</p>
+            
+            <div class="row g-4">
+                @foreach (var destination in Model.QuickDestinations.Take(4))
+                {
+                    <div class="col-md-3">
+                        <div class="destination-card" onclick="searchDestination('@destination.Name')">
+                            <img src="@destination.ImageUrl" class="w-100 h-100 object-fit-cover" alt="@destination.Name"
+                                 onerror="this.src='/images/destinations/default-destination.jpg'">
+                            <div class="destination-overlay">
+                                <h5 class="fw-bold">@destination.Name</h5>
+                                <p class="mb-0">@destination.Description</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">@((Model.HappyCustomers > 0 ? Model.HappyCustomers : 1000000).ToString("N0", new System.Globalization.CultureInfo("en-US")).Replace(",", "."))</div>
+                    <p class="text-muted">Happy Customers</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">@((Model.TotalHotels > 0 ? Model.TotalHotels : 50000).ToString("N0", new System.Globalization.CultureInfo("en-US")).Replace(",", "."))</div>
+                    <p class="text-muted">Hotels Worldwide</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">@(Model.CountriesServed > 0 ? Model.CountriesServed : 100)+</div>
+                    <p class="text-muted">Countries</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <p class="text-muted">Customer Support</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Set default dates
+            var today = new Date();
+            var tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            var dayAfter = new Date(today);
+            dayAfter.setDate(dayAfter.getDate() + 2);
+            
+            $('#checkin').val(tomorrow.toISOString().split('T')[0]);
+            $('#checkout').val(dayAfter.toISOString().split('T')[0]);
+            
+            // Guest selection
+            $('.guest-option').click(function(e) {
+                e.preventDefault();
+                var guests = $(this).data('guests');
+                $('#guestCount').val(guests);
+                $('#guestText').text(guests + (guests === 1 ? ' adult' : ' adults'));
+            });
+            
+            // Destination autocomplete
+            var searchTimeout;
+            $('#destination').on('input', function() {
+                var term = $(this).val();
+                clearTimeout(searchTimeout);
+                
+                if (term.length < 2) {
+                    $('#destination-suggestions').hide();
+                    return;
+                }
+                
+                searchTimeout = setTimeout(function() {
+                    $.get('@Url.Action("GetDestinations", "Home")', { term: term })
+                        .done(function(data) {
+                            var suggestions = $('#destination-suggestions');
+                            suggestions.empty();
+                            
+                            if (data.length > 0) {
+                                data.forEach(function(item) {
+                                    suggestions.append(
+                                        '<div class="p-2 border-bottom suggestion-item" style="cursor: pointer;">' +
+                                        '<div class="fw-bold">' + item.label + '</div>' +
+                                        '<small class="text-muted">' + item.hotelCount + ' hotels</small>' +
+                                        '</div>'
+                                    );
+                                });
+                                suggestions.show();
+                            } else {
+                                suggestions.hide();
+                            }
+                        });
+                }, 300);
+            });
+            
+            // Handle suggestion clicks
+            $(document).on('click', '.suggestion-item', function() {
+                var cityName = $(this).find('.fw-bold').text().split(',')[0];
+                $('#destination').val(cityName);
+                $('#destination-suggestions').hide();
+            });
+            
+            // Hide suggestions when clicking outside
+            $(document).click(function(e) {
+                if (!$(e.target).closest('#destination, #destination-suggestions').length) {
+                    $('#destination-suggestions').hide();
+                }
+            });
+            
+            // Validate dates
+            $('#checkin, #checkout').change(function() {
+                var checkin = new Date($('#checkin').val());
+                var checkout = new Date($('#checkout').val());
+                var today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (checkin < today) {
+                    $('#checkin').val(today.toISOString().split('T')[0]);
+                    checkin = today;
+                }
+                
+                if (checkout <= checkin) {
+                    var newCheckout = new Date(checkin);
+                    newCheckout.setDate(newCheckout.getDate() + 1);
+                    $('#checkout').val(newCheckout.toISOString().split('T')[0]);
+                }
+            });
+        });
+        
+        // Search destination function
+        function searchDestination(city) {
+            window.location.href = '@Url.Action("SearchDestination", "Home")?city=' + encodeURIComponent(city);
+        }
+        
+        // Apply offer function
+        function applyOffer(promoCode) {
+            if (promoCode) {
+                localStorage.setItem('promoCode', promoCode);
+                alert('Promo code ' + promoCode + ' has been applied! It will be used in your next booking.');
+            }
+        }
+    </script>
+}

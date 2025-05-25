@@ -1,0 +1,98 @@
+@model TH_WEB.Models.Room
+
+@{
+    ViewData["Title"] = Model.RoomType + " Room";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>@Model.RoomType Room</h1>
+            <p class="lead">@Model.Description</p>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Room Details</h5>
+                    <ul class="list-unstyled">
+                        <li><strong>Price:</strong> $@Model.PricePerNight per night</li>
+                        <li><strong>Capacity:</strong> @Model.MaxOccupancy persons</li>
+                        <li><strong>Amenities:</strong></li>
+                        <ul>
+                            @foreach (var amenity in Model.Amenities)
+                            {
+                                <li><i class="fas fa-check text-success"></i> @amenity</li>
+                            }
+                        </ul>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Book This Room</h5>
+                    <form asp-controller="Booking" asp-action="Create" method="get">
+                        <input type="hidden" name="roomId" value="@Model.Id" />
+                        <div class="form-group">
+                            <label>Check-in Date</label>
+                            <input type="date" name="checkIn" class="form-control" required 
+                                   min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="form-group">
+                            <label>Check-out Date</label>
+                            <input type="date" name="checkOut" class="form-control" required 
+                                   min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Proceed to Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Hotel Information</h5>
+                    <p class="card-text">
+                        <strong>@Model.Hotel.Name</strong><br />
+                        <i class="fas fa-map-marker-alt"></i> @Model.Hotel.Address
+                    </p>
+                    <a asp-controller="Hotel" asp-action="Details" asp-route-id="@Model.HotelId" 
+                       class="btn btn-outline-primary">View Hotel Details</a>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Availability Calendar</h5>
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize date inputs
+            $('input[type="date"]').on('change', function() {
+                var checkIn = $('input[name="checkIn"]').val();
+                var checkOut = $('input[name="checkOut"]').val();
+                
+                if (checkIn && checkOut) {
+                    // Check room availability
+                    $.post('/Room/CheckAvailability', {
+                        roomId: @Model.Id,
+                        checkIn: checkIn,
+                        checkOut: checkOut
+                    }, function(response) {
+                        if (!response.isAvailable) {
+                            alert('Room is not available for the selected dates.');
+                            $('input[name="checkOut"]').val('');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+} 

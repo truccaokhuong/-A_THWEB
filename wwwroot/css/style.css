@@ -1,0 +1,225 @@
+/* Custom Colors */
+:root {
+  --orange: #e67e22;
+  --light-orange: #f5d0a9;
+  --dark-orange: #d35400;
+}
+
+/* Background Colors */
+.bg-orange {
+  background-color: var(--orange);
+}
+
+.bg-light-orange {
+  background-color: var(--light-orange);
+}
+
+/* Text Colors */
+.text-orange {
+  color: var(--orange);
+}
+
+/* Buttons */
+.btn-orange {
+  background-color: var(--orange);
+  color: white;
+  border: none;
+  transition: background-color 0.3s;
+}
+
+.btn-orange:hover {
+  background-color: var(--dark-orange);
+  color: white;
+}
+
+/* Product Cards */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Product Images */
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.product-image-container {
+  height: 250px;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  overflow: hidden;
+}
+
+.product-image-container:hover .product-img {
+  transform: scale(1.05);
+}
+
+.product-image {
+  color: #adb5bd;
+  font-size: 18px;
+}
+
+/* Featured Product Banner */
+.featured-banner {
+  background: linear-gradient(to right, #333, #555);
+}
+
+/* Carousel Styling */
+.carousel-img {
+  height: 400px;
+  position: relative;
+}
+
+.carousel-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.carousel-item .container {
+  position: relative;
+  z-index: 2;
+}
+
+.carousel-indicators {
+  z-index: 3;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  z-index: 3;
+}
+
+/* Make carousel responsive */
+@media (max-width: 768px) {
+  .carousel-img {
+    height: 300px;
+  }
+
+  .carousel-item h2 {
+    font-size: 2rem;
+  }
+
+  .carousel-item p.lead {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .carousel-img {
+    height: 250px;
+  }
+
+  .carousel-item h2 {
+    font-size: 1.5rem;
+  }
+
+  .carousel-item .row > div {
+    text-align: center;
+  }
+}
+
+/* Navigation */
+.nav-link {
+  font-weight: 500;
+  padding: 0.8rem 1.2rem;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: var(--orange) !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .nav-link {
+    padding: 0.5rem;
+  }
+
+  .product-image-container {
+    height: 150px;
+  }
+}
+
+/* Footer */
+footer {
+  position: static;
+  width: 100%;
+}
+
+footer a {
+  text-decoration: none;
+  transition: opacity 0.3s;
+}
+
+footer a:hover {
+  opacity: 0.8;
+}
+
+/* Badge Styling */
+.badge {
+  font-weight: 500;
+}
+
+/* Newsletter Form */
+.input-group .form-control:focus {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 0.25rem rgba(230, 126, 34, 0.25);
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+main {
+  min-height: 60vh;
+}
+
+/* Nếu có form tìm kiếm chính, làm nổi bật nó */
+.search-form, .main-search-box {
+  background: rgba(255,255,255,0.95);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  padding: 24px 18px;
+  margin-top: 32px;
+}
+
+/* Nút chính nổi bật trên nền mới */
+.btn-primary, .search-btn {
+  background: linear-gradient(90deg, #2193b0 0%, #6dd5ed 100%);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+.btn-primary:hover, .search-btn:hover {
+  background: linear-gradient(90deg, #6dd5ed 0%, #2193b0 100%);
+  color: #fff;
+}
+
+html, body {
+  min-height: 100vh !important;
+  height: auto !important;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+}

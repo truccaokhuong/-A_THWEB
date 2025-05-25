@@ -1,0 +1,63 @@
+@model IEnumerable<TH_WEB.Models.Booking>
+
+@{
+    ViewData["Title"] = "My Bookings";
+}
+
+<div class="container">
+    <h1 class="my-4">My Bookings</h1>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            You don't have any bookings yet. <a asp-controller="Hotel" asp-action="Index">Browse hotels</a> to make a booking.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var booking in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@booking.Room.Hotel.Name</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@booking.Room.RoomType Room</h6>
+                            
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <p class="mb-1"><strong>Check-in:</strong></p>
+                                    <p>@booking.CheckInDate.ToString("MMM dd, yyyy")</p>
+                                </div>
+                                <div class="col-6">
+                                    <p class="mb-1"><strong>Check-out:</strong></p>
+                                    <p>@booking.CheckOutDate.ToString("MMM dd, yyyy")</p>
+                                </div>
+                            </div>
+
+                            <p class="card-text">
+                                <strong>Total Price:</strong> $@booking.TotalPrice
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="badge @(booking.Status == "Confirmed" ? "badge-success" : 
+                                                  booking.Status == "Cancelled" ? "badge-danger" : 
+                                                  "badge-warning")">
+                                    @booking.Status
+                                </span>
+                                
+                                @if (booking.Status == "Confirmed" && booking.CheckInDate > DateTime.Now)
+                                {
+                                    <form asp-action="Cancel" asp-route-id="@booking.Id" method="post" 
+                                          onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                        <button type="submit" class="btn btn-outline-danger">Cancel Booking</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div> 
