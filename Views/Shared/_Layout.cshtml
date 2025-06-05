@@ -226,19 +226,16 @@
                 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <div class="navbar-nav me-auto">
-                        <a class="nav-link" href="@Url.Action("Index", "Hotel")">
+                        <a class="nav-link" href="@Url.Action("Index", "Hotel", new { area = "" })">
                             <i class="fas fa-bed me-1"></i>Stays
                         </a>
-                        <a class="nav-link" href="#" onclick="alert('Coming soon!')">
-                            <i class="fas fa-plane me-1"></i>Flights
-                        </a>
-                        <a class="nav-link" href="#" onclick="alert('Coming soon!')">
-                            <i class="fas fa-plus me-1"></i>Flight + Hotel
-                        </a>
-                        <a class="nav-link" href="#" onclick="alert('Coming soon!')">
+                        <a class="nav-link" href="@Url.Action("Index", "CarRental", new { area = "" })">
                             <i class="fas fa-car me-1"></i>Car rentals
                         </a>
-                        <a class="nav-link" href="#" onclick="alert('Coming soon!')">
+                        <a class="nav-link" href="@Url.Action("Index", "TravelPackage", new { area = "" })">
+                            <i class="fas fa-suitcase me-1"></i>Travel Packages
+                        </a>
+                        <a class="nav-link" href="@Url.Action("Index", "Attractions", new { area = "Attractions" })">
                             <i class="fas fa-map-marker-alt me-1"></i>Attractions
                         </a>
                         <a class="nav-link" href="#" onclick="alert('Coming soon!')">
@@ -252,14 +249,34 @@
                                 USD
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" onclick="changeCurrency('USD')">USD</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="changeCurrency('EUR')">EUR</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="changeCurrency('VND')">VND</a></li>
+                                <li><a class="dropdown-item" href="#">EUR</a></li>
+                                <li><a class="dropdown-item" href="#">GBP</a></li>
                             </ul>
                         </div>
-                        <a class="btn btn-outline-light me-2" href="#" onclick="alert('Coming soon!')">List your property</a>
-                        <a class="btn btn-outline-light me-2" href="#" onclick="alert('Coming soon!')">Register</a>
-                        <a class="btn btn-light" href="#" onclick="alert('Coming soon!')">Sign in</a>
+                        
+                        @* Check if the user is on the Identity area to show 'Back to Home' *@
+                        @{ 
+                            var currentArea = ViewContext.RouteData.Values["area"]?.ToString();
+                        }
+
+                        @if (!string.IsNullOrEmpty(currentArea) && currentArea.Equals("Identity", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <a class="nav-link" href="@Url.Action("Index", "Home", new { area = "" })">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Home
+                            </a>
+                        }
+                        else
+                        {
+                             @* Links for general site navigation like List Property, Register, Sign In *@
+                             @* Example: Link to the combined Login/Register page *@
+                             <a class="nav-link btn btn-outline-light me-2" href="@Url.Action("LoginRegister", "Account", new { area = "Identity", tab = "register" })">
+                                 List your property
+                             </a>
+                            
+                             <a class="nav-link btn btn-light text-primary" href="@Url.Action("LoginRegister", "Account", new { area = "Identity" })">
+                                 Register / Sign in
+                             </a>
+                        }
                     </div>
                 </div>
             </div>

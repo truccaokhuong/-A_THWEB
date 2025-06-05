@@ -11,7 +11,8 @@ namespace TH_WEB.Models
         [Key]
         public int Id { get; set; }
 
-        public int HotelId { get; set; }
+        public int? HotelId { get; set; }
+        public int? TravelPackageId { get; set; }
 
         public int? BookingId { get; set; }
 
@@ -74,7 +75,10 @@ namespace TH_WEB.Models
 
         // Mối quan hệ
         [ForeignKey("HotelId")]
-        public virtual Hotel Hotel { get; set; } = null!;
+        public virtual Hotel? Hotel { get; set; }
+
+        [ForeignKey("TravelPackageId")]
+        public virtual TravelPackage? TravelPackage { get; set; }
 
         [ForeignKey("BookingId")]
         public virtual Booking? Booking { get; set; }

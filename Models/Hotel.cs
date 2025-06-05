@@ -15,18 +15,22 @@ namespace TH_WEB.Models
         [StringLength(100)]
         public string Name { get; set; } = string.Empty;
         
-        [StringLength(1000)]
+        [Required]
+        [StringLength(500)]
         public string Description { get; set; } = string.Empty;
         
+        [Required]
         [StringLength(200)]
         public string Address { get; set; } = string.Empty;
         
+        [Required]
         [StringLength(100)]
         public string City { get; set; } = string.Empty;
         
         [StringLength(50)]
         public string PostalCode { get; set; } = string.Empty;
         
+        [Required]
         [StringLength(100)]
         public string Country { get; set; } = string.Empty;
         
@@ -37,17 +41,20 @@ namespace TH_WEB.Models
         [Column(TypeName = "decimal(3, 1)")]
         public decimal Rating { get; set; }
         
-        [StringLength(500)]
+        [Required]
+        [StringLength(200)]
         public string ImageUrl { get; set; } = string.Empty;
         
         // Thông tin liên hệ
+        [Required]
         [StringLength(20)]
         public string Phone { get; set; } = string.Empty;
         
+        [Required]
         [StringLength(100)]
-        [EmailAddress]
         public string Email { get; set; } = string.Empty;
         
+        [Required]
         [StringLength(200)]
         public string Website { get; set; } = string.Empty;
         
@@ -127,11 +134,50 @@ namespace TH_WEB.Models
         public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
         public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();
-        public virtual ICollection<HotelImage> HotelImages { get; set; } = new List<HotelImage>();
+        public virtual ICollection<HotelImage> Images { get; set; } = new List<HotelImage>();
         public virtual ICollection<HotelFacility> Facilities { get; set; } = new List<HotelFacility>();
 
         // Computed property for lowest price
         public decimal LowestPrice => Rooms?.Min(r => r.Price) ?? 0;
+
+        // Location property
+        [Required]
+        [StringLength(200)]
+        public string Location { get; set; } = string.Empty;
+
+        // Additional properties
+        [StringLength(100)]
+        public string State { get; set; } = string.Empty;
+
+        [StringLength(50)]
+        public string TimeZone { get; set; } = string.Empty;
+
+        [StringLength(50)]
+        public string Currency { get; set; } = string.Empty;
+
+        [StringLength(500)]
+        public string PetPolicy { get; set; } = string.Empty;
+
+        [StringLength(500)]
+        public string ParkingPolicy { get; set; } = string.Empty;
+
+        [StringLength(500)]
+        public string SmokingPolicy { get; set; } = string.Empty;
+
+        [StringLength(500)]
+        public string SpecialInstructions { get; set; } = string.Empty;
+
+        [StringLength(200)]
+        public string SeoTitle { get; set; } = string.Empty;
+
+        [StringLength(500)]
+        public string SeoDescription { get; set; } = string.Empty;
+
+        [StringLength(200)]
+        public string SeoKeywords { get; set; } = string.Empty;
+
+        [StringLength(200)]
+        public string Slug { get; set; } = string.Empty;
     }
 
     public class HotelImage

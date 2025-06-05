@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TH_WEB.Data;
 using TH_WEB.Models;
+using TH_WEB.Services;
 
 namespace TH_WEB.Services
 {
     public class BookingService : IBookingService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailService _emailService;
         
-        public BookingService(ApplicationDbContext context)
+        public BookingService(ApplicationDbContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         public IEnumerable<Booking> GetAllBookings()
@@ -56,7 +59,7 @@ namespace TH_WEB.Services
             var booking = _context.Bookings.FirstOrDefault(b => b.Id == id);
             if (booking != null)
             {
-                booking.Status = "Cancelled";
+                booking.Status = BookingStatus.Cancelled;
                 _context.SaveChanges();
             }
         }
@@ -76,63 +79,127 @@ namespace TH_WEB.Services
 
         public async Task<Booking> GetBookingByIdAsync(int id)
         {
-            return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == id);
+            return await _context.Bookings
+                .Include(b => b.Room)
+                    .ThenInclude(r => r.Hotel)
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<IEnumerable<Booking>> GetUserBookingsAsync(string userId)
         {
-            return await _context.Bookings.Where(b => b.UserId == userId).ToListAsync();
+            return await _context.Bookings
+                .Include(b => b.Room)
+                    .ThenInclude(r => r.Hotel)
+                .Where(b => b.UserId == userId)
+                .OrderByDescending(b => b.CreatedAt)
+                .ToListAsync();
         }
 
         public async Task<Booking> CreateBookingAsync(Booking booking)
         {
-            await _context.Bookings.AddAsync(booking);
+            // Validate room availability
+            var isAvailable = await IsRoomAvailableAsync(booking.RoomId, booking.CheckInDate, booking.CheckOutDate);
+            if (!isAvailable)
+            {
+                return null;
+            }
+
+            booking.Status = BookingStatus.Pending;
+            booking.CreatedAt = DateTime.UtcNow;
+            booking.UpdatedAt = DateTime.UtcNow;
+
+            _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
+
             return booking;
         }
 
-        public async Task CancelBookingAsync(int id)
+        public async Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime checkOut)
         {
-            var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == id);
-            if (booking != null)
-            {
-                booking.Status = "Cancelled";
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task<bool> SendBookingConfirmationEmailAsync(int bookingId)
-        {
-            var booking = await _context.Bookings
-                .Include(b => b.Room)
-                .ThenInclude(r => r.Hotel)
-                .FirstOrDefaultAsync(b => b.Id == bookingId);
-            if (booking == null)
-            {
-                return false;
-            }
-            // Simulate sending email
-            return true;
-        }
-
-        public async Task<bool> CheckRoomAvailabilityAsync(int roomId, DateTime checkIn, DateTime checkOut)
-        {
-            var overlappingBookings = await _context.Bookings
-                .Where(b => b.RoomId == roomId)
-                .Where(b => b.Status != "Cancelled")
-                .Where(b =>
-                    (checkIn >= b.CheckIn && checkIn < b.CheckOut) ||
-                    (checkOut > b.CheckIn && checkOut <= b.CheckOut) ||
-                    (checkIn <= b.CheckIn && checkOut >= b.CheckOut))
+            var existingBookings = await _context.Bookings
+                .Where(b => b.RoomId == roomId &&
+                           b.Status != BookingStatus.Cancelled &&
+                           ((checkIn >= b.CheckInDate && checkIn < b.CheckOutDate) ||
+                            (checkOut > b.CheckInDate && checkOut <= b.CheckOutDate) ||
+                            (checkIn <= b.CheckInDate && checkOut >= b.CheckOutDate)))
                 .AnyAsync();
-            return !overlappingBookings;
+
+            return !existingBookings;
         }
 
         public async Task<Booking> UpdateBookingAsync(Booking booking)
         {
-            _context.Bookings.Update(booking);
-            await _context.SaveChangesAsync();
-            return booking;
+            try
+            {
+                booking.UpdatedAt = DateTime.UtcNow;
+                _context.Bookings.Update(booking);
+                await _context.SaveChangesAsync();
+                return booking;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task CancelBookingAsync(int id)
+        {
+            var booking = await GetBookingByIdAsync(id);
+            if (booking == null)
+            {
+                return;
+            }
+
+            booking.Status = BookingStatus.Cancelled;
+            booking.UpdatedAt = DateTime.UtcNow;
+
+            await UpdateBookingAsync(booking);
+        }
+
+        public async Task SendBookingConfirmationEmailAsync(Booking booking)
+        {
+            var room = await _context.Rooms
+                .Include(r => r.Hotel)
+                .FirstOrDefaultAsync(r => r.Id == booking.RoomId);
+
+            if (room == null)
+            {
+                return;
+            }
+
+            var body = $"Thank you for your booking with EzBooking!\n\nBooking Details:\nHotel: {room.Hotel.Name}\nRoom Type: {room.RoomType}\nCheck-in Date: {booking.CheckInDate.ToShortDateString()}\nCheck-out Date: {booking.CheckOutDate.ToShortDateString()}\nNumber of Adults: {booking.NumberOfAdults}\nNumber of Children: {booking.NumberOfChildren}\nNumber of Infants: {booking.NumberOfInfants}\nTotal Price: ${booking.TotalPrice:F2}\nBooking Reference: {booking.BookingReference}\n\nWe look forward to welcoming you!\nEzBooking Team";
+
+            await _emailService.SendEmailAsync(booking.GuestEmail, "EzBooking - Booking Confirmation", body);
+        }
+
+        public async Task<bool> ValidateBookingAsync(Booking booking)
+        {
+            if (booking.CheckInDate >= booking.CheckOutDate)
+            {
+                return false;
+            }
+
+            var totalGuests = booking.NumberOfAdults + booking.NumberOfChildren + booking.NumberOfInfants;
+            if (totalGuests <= 0)
+            {
+                return false;
+            }
+
+            var room = await _context.Rooms
+                .Include(r => r.Hotel)
+                .FirstOrDefaultAsync(r => r.Id == booking.RoomId);
+
+            if (room == null)
+            {
+                return false;
+            }
+
+            if (totalGuests > room.MaxOccupancy)
+            {
+                return false;
+            }
+
+            return await IsRoomAvailableAsync(booking.RoomId, booking.CheckInDate, booking.CheckOutDate);
         }
 
         public async Task DeleteBookingAsync(int id)
@@ -145,18 +212,6 @@ namespace TH_WEB.Services
             }
         }
 
-        public async Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime checkOut)
-        {
-            var overlappingBookings = await _context.Bookings
-                .Where(b => b.RoomId == roomId && b.Status != "Cancelled")
-                .Where(b =>
-                    (checkIn >= b.CheckInDate && checkIn < b.CheckOutDate) ||
-                    (checkOut > b.CheckInDate && checkOut <= b.CheckOutDate) ||
-                    (checkIn <= b.CheckInDate && checkOut >= b.CheckOutDate))
-                .AnyAsync();
-            return !overlappingBookings;
-        }
-
         public async Task<decimal> CalculateTotalPriceAsync(int roomId, DateTime checkIn, DateTime checkOut)
         {
             var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == roomId);
@@ -165,10 +220,12 @@ namespace TH_WEB.Services
             return room.PricePerNight * nights;
         }
 
-        public async Task SendBookingConfirmationEmailAsync(Booking booking)
+        private string GenerateBookingConfirmationEmailBody(Booking booking)
         {
-            // Simulate sending email
-            await Task.CompletedTask;
+            // Construct the email body with booking details
+            var body = $"Thank you for your booking with EzBooking!\n\nBooking Details:\nHotel: {booking.Room.Hotel.Name}\nRoom Type: {booking.Room.RoomType}\nCheck-in Date: {booking.CheckInDate.ToShortDateString()}\nCheck-out Date: {booking.CheckOutDate.ToShortDateString()}\nNumber of Adults: {booking.NumberOfAdults}\nNumber of Children: {booking.NumberOfChildren}\nNumber of Infants: {booking.NumberOfInfants}\nTotal Price: ${booking.TotalPrice:F2}\nBooking Reference: {booking.BookingReference}\n\nWe look forward to welcoming you!\nEzBooking Team";
+
+            return body;
         }
     }
 }

@@ -74,7 +74,7 @@ namespace TH_WEB.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Search(string destination, DateTime checkIn, DateTime checkOut, int guests = 2)
+        public IActionResult Search(string destination, DateTime checkIn, DateTime checkOut, int guests = 2)
         {
             // Validate dates
             if (checkIn < DateTime.Now.Date)
@@ -96,7 +96,7 @@ namespace TH_WEB.Controllers
             });
         }
 
-        public async Task<IActionResult> SearchDestination(string city)
+        public IActionResult SearchDestination(string city)
         {
             var tomorrow = DateTime.Now.AddDays(1);
             var dayAfter = DateTime.Now.AddDays(2);
@@ -112,14 +112,14 @@ namespace TH_WEB.Controllers
 
         // API endpoint for autocomplete
         [HttpGet]
-        public async Task<IActionResult> GetDestinations(string term)
+        public IActionResult GetDestinations(string term)
         {
             if (string.IsNullOrEmpty(term))
             {
                 return Json(new List<object>());
             }
 
-            var destinations = await _context.Hotels
+            var destinations = _context.Hotels
                 .Where(h => h.City.Contains(term) || h.Name.Contains(term))
                 .Select(h => new { 
                     label = $"{h.City}, {h.Country}", 
@@ -128,7 +128,7 @@ namespace TH_WEB.Controllers
                 })
                 .Distinct()
                 .Take(10)
-                .ToListAsync();
+                .ToList();
 
             return Json(destinations);
         }
@@ -187,8 +187,8 @@ namespace TH_WEB.Controllers
     // Thêm class cho Quick Destinations
     public class QuickDestination
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string ImageUrl { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
     }
 }

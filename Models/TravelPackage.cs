@@ -1,4 +1,3 @@
-// Models/TravelPackage.cs
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,89 +11,59 @@ namespace TH_WEB.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(200)]
-        public string Title { get; set; } = string.Empty;
+        [StringLength(100)]
+        public string Name { get; set; } = string.Empty;
 
-        [StringLength(1000)]
+        [Required]
+        [StringLength(500)]
         public string Description { get; set; } = string.Empty;
 
-        [StringLength(500)]
-        public string ImageUrl { get; set; } = string.Empty;
+        [Required]
+        [StringLength(200)]
+        public string DestinationCode { get; set; } = string.Empty;
 
-        public PackageType Type { get; set; } = PackageType.FlightHotel;
+        [Required]
+        [StringLength(100)]
+        public string Country { get; set; } = string.Empty;
 
         [StringLength(100)]
-        public string Destination { get; set; } = string.Empty;
+        public string Region { get; set; } = string.Empty;
 
-        [StringLength(100)]
-        public string DepartureCity { get; set; } = string.Empty;
-
-        public int Duration { get; set; } // số ngày
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal BasePrice { get; set; }
+        public decimal AdultPrice { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal DiscountPercentage { get; set; } = 0;
+        public decimal ChildPrice { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal FinalPrice { get; set; }
+        public decimal InfantPrice { get; set; }
 
-        // Thông tin chuyến bay
-        public int? OutboundFlightId { get; set; }
-        public int? ReturnFlightId { get; set; }
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal TotalPrice { get; set; }
 
-        // Thông tin khách sạn
-        public int? HotelId { get; set; }
-        public int NumberOfNights { get; set; }
-
-        // Thông tin xe thuê (tùy chọn)
-        public int? CarRentalId { get; set; }
-        public bool IncludesCarRental { get; set; } = false;
-
-        // Bao gồm trong gói
-        public bool IncludesFlights { get; set; } = true;
-        public bool IncludesHotel { get; set; } = true;
-        public bool IncludesBreakfast { get; set; } = false;
-        public bool IncludesMeals { get; set; } = false;
-        public bool IncludesTransfers { get; set; } = false;
-        public bool IncludesTours { get; set; } = false;
-        public bool IncludesInsurance { get; set; } = false;
-
-        [StringLength(1000)]
-        public string Inclusions { get; set; } = string.Empty;
-
-        [StringLength(1000)]
-        public string Exclusions { get; set; } = string.Empty;
-
-        // Ngày có hiệu lực
-        public DateTime ValidFrom { get; set; }
-        public DateTime ValidTo { get; set; }
-
-        // Điều kiện đặt chỗ
-        public int MinimumStay { get; set; } = 1;
-        public int MaximumStay { get; set; } = 365;
-        public int AdvanceBookingDays { get; set; } = 1;
-
-        [StringLength(500)]
-        public string CancellationPolicy { get; set; } = string.Empty;
+        public int MaxAdults { get; set; }
+        public int MaxChildren { get; set; }
+        public int MaxInfants { get; set; }
 
         public bool IsActive { get; set; } = true;
-        public bool IsFeatured { get; set; } = false;
+        public bool IsFeatured { get; set; }
+        public int Priority { get; set; }
+        public PackageStatus Status { get; set; } = PackageStatus.Active;
 
-        public int MaxGuests { get; set; } = 4;
-        public int MinGuests { get; set; } = 1;
+        [StringLength(200)]
+        public string ImageUrl { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation Properties
-        [ForeignKey("OutboundFlightId")]
-        public virtual Flight? OutboundFlight { get; set; }
+        // Foreign keys
+        public int? HotelId { get; set; }
+        public int? CarRentalId { get; set; }
 
-        [ForeignKey("ReturnFlightId")]
-        public virtual Flight? ReturnFlight { get; set; }
-
+        // Navigation properties
         [ForeignKey("HotelId")]
         public virtual Hotel? Hotel { get; set; }
 
@@ -102,8 +71,30 @@ namespace TH_WEB.Models
         public virtual CarRental? CarRental { get; set; }
 
         public virtual ICollection<PackageBooking> Bookings { get; set; } = new List<PackageBooking>();
-        public virtual ICollection<PackageImage> Images { get; set; } = new List<PackageImage>();
+
+        // Additional properties for views
+        public string Title => Name;
+        public string Destination => $"{City}, {Country}";
+        public string City { get; set; } = string.Empty;
+        public int Duration => (EndDate - StartDate).Days;
+        public decimal BasePrice => TotalPrice;
+        public decimal DiscountPercentage { get; set; }
+        public decimal FinalPrice => TotalPrice * (1 - DiscountPercentage / 100);
+        public int NumberOfNights => Duration;
+
+        // Package features
+        public bool IncludesHotel { get; set; }
+        public bool IncludesBreakfast { get; set; }
+        public bool IncludesMeals { get; set; }
+        public bool IncludesTransfers { get; set; }
+        public bool IncludesTours { get; set; }
+        public bool IncludesInsurance { get; set; }
+
+        // Additional collections
+        public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
         public virtual ICollection<PackageItinerary> Itinerary { get; set; } = new List<PackageItinerary>();
+        public virtual ICollection<PackageExtra> Extras { get; set; } = new List<PackageExtra>();
+        public virtual ICollection<PackageFAQ> FAQs { get; set; } = new List<PackageFAQ>();
     }
 
     public class PackageBooking
@@ -111,40 +102,65 @@ namespace TH_WEB.Models
         [Key]
         public int Id { get; set; }
 
-        public int TravelPackageId { get; set; }
-
-        [StringLength(100)]
-        public string? UserId { get; set; }
+        [Required]
+        public int PackageId { get; set; }
 
         [Required]
-        [StringLength(100)]
-        public string LeadPassengerName { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(100)]
-        [EmailAddress]
-        public string LeadPassengerEmail { get; set; } = string.Empty;
-
-        [StringLength(20)]
-        public string LeadPassengerPhone { get; set; } = string.Empty;
-
-        [Required]
-        public DateTime TravelStartDate { get; set; }
-
-        [Required]
-        public DateTime TravelEndDate { get; set; }
-
-        public int NumberOfAdults { get; set; } = 1;
-        public int NumberOfChildren { get; set; } = 0;
-        public int NumberOfInfants { get; set; } = 0;
-
-        public int TotalPassengers => NumberOfAdults + NumberOfChildren + NumberOfInfants;
+        public int NumberOfAdults { get; set; }
+        public int NumberOfChildren { get; set; }
+        public int NumberOfInfants { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal PackagePrice { get; set; }
+        public decimal TotalPrice { get; set; }
 
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal ExtrasPrice { get; set; }
+        public BookingStatus Status { get; set; } = BookingStatus.Pending;
+        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
 
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal TaxesAndFees { get; set;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        [ForeignKey("PackageId")]
+        public virtual TravelPackage TravelPackage { get; set; } = null!;
+    }
+
+    public class PackageItinerary
+    {
+        [Key]
+        public int Id { get; set; }
+        public int PackageId { get; set; }
+        public int DayNumber { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime Date { get; set; }
+
+        [ForeignKey("PackageId")]
+        public virtual TravelPackage Package { get; set; } = null!;
+    }
+
+    public class PackageExtra
+    {
+        [Key]
+        public int Id { get; set; }
+        public int PackageId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+
+        [ForeignKey("PackageId")]
+        public virtual TravelPackage Package { get; set; } = null!;
+    }
+
+    public class PackageFAQ
+    {
+        [Key]
+        public int Id { get; set; }
+        public int PackageId { get; set; }
+        public string Question { get; set; } = string.Empty;
+        public string Answer { get; set; } = string.Empty;
+
+        [ForeignKey("PackageId")]
+        public virtual TravelPackage Package { get; set; } = null!;
+    }
+} 

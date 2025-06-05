@@ -5,6 +5,14 @@
       "PackagePath": "staticwebassets\\TH_WEB.o34refo7mo.bundle.scp.css"
     },
     {
+      "Id": "D:\\TH WEB\\wwwroot\\Identity\\identity.css",
+      "PackagePath": "staticwebassets\\Identity\\identity.css"
+    },
+    {
+      "Id": "D:\\TH WEB\\wwwroot\\Identity\\identity.js",
+      "PackagePath": "staticwebassets\\Identity\\identity.js"
+    },
+    {
       "Id": "D:\\TH WEB\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },
@@ -63,6 +71,10 @@
     {
       "Id": "D:\\TH WEB\\wwwroot\\images\\offers\\weekend-escape.jpg",
       "PackagePath": "staticwebassets\\images\\offers\\weekend-escape.jpg"
+    },
+    {
+      "Id": "D:\\TH WEB\\wwwroot\\js\\services\\attractions.service.js",
+      "PackagePath": "staticwebassets\\js\\services\\attractions.service.js"
     },
     {
       "Id": "D:\\TH WEB\\wwwroot\\js\\site.js",

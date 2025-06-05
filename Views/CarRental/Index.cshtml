@@ -1,0 +1,549 @@
+@model IEnumerable<TH_WEB.Models.CarRental>
+
+@{
+    ViewData["Title"] = "Car Rental";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .search-section {
+        background: linear-gradient(135deg, #003580 0%, #0071c2 100%);
+        color: white;
+        padding: 60px 0 40px 0;
+        margin-bottom: 30px;
+    }
+    
+    .search-box {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    
+    .car-card {
+        border: 1px solid #e7ecf3;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: white;
+        margin-bottom: 20px;
+    }
+    
+    .car-card:hover {
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .car-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: #f5f5f5;
+    }
+    
+    .price-tag {
+        background: #003580;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 18px;
+    }
+    
+    .feature-tag {
+        background: #e7f3ff;
+        color: #003580;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        margin: 2px;
+        display: inline-block;
+    }
+    
+    .location-tag {
+        background: #f0f9ff;
+        color: #0369a1;
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-size: 11px;
+    }
+    
+    .availability-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .available {
+        background: #e6f7ed;
+        color: #047857;
+    }
+    
+    .unavailable {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+    
+    .rating-stars {
+        color: #ffa500;
+    }
+    
+    .filter-sidebar {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    
+    .btn-booking {
+        background: #003580;
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-booking:hover {
+        background: #002855;
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #003580;
+        box-shadow: 0 0 0 0.2rem rgba(0, 53, 128, 0.25);
+    }
+    
+    .category-icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 8px;
+    }
+</style>
+
+<!-- Search Section -->
+<div class="search-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-4">
+                    <h1 class="mb-2">Find Your Perfect Car Rental</h1>
+                    <p class="lead opacity-90">Compare prices from top car rental companies</p>
+                </div>
+                
+                <div class="search-box">
+                    <form method="get" id="searchForm">
+                        <div class="row g-3">
+                            <!-- Pickup Location -->
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold text-dark">
+                                    <i class="fas fa-map-marker-alt text-primary me-1"></i>
+                                    Pickup Location
+                                </label>
+                                <select name="pickupLocationId" class="form-select form-select-lg">
+                                    <option value="">Select pickup location</option>
+                                    @if (ViewBag.PickupLocations != null)
+                                    {
+                                        foreach (var location in ViewBag.PickupLocations)
+                                        {
+                                            <option value="@location.Value">@location.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            
+                            <!-- Dropoff Location -->
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold text-dark">
+                                    <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                    Dropoff Location
+                                </label>
+                                <select name="dropoffLocationId" class="form-select form-select-lg">
+                                    <option value="">Select dropoff location</option>
+                                    @if (ViewBag.DropoffLocations != null)
+                                    {
+                                        foreach (var location in ViewBag.DropoffLocations)
+                                        {
+                                            <option value="@location.Value">@location.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            
+                            <!-- Pickup Date -->
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold text-dark">
+                                    <i class="fas fa-calendar text-success me-1"></i>
+                                    Pickup Date
+                                </label>
+                                <input type="date" name="pickupDate" class="form-control form-control-lg" 
+                                       value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                            </div>
+                            
+                            <!-- Dropoff Date -->
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold text-dark">
+                                    <i class="fas fa-calendar text-warning me-1"></i>
+                                    Dropoff Date
+                                </label>
+                                <input type="date" name="dropoffDate" class="form-control form-control-lg" 
+                                       value="@DateTime.Now.AddDays(3).ToString("yyyy-MM-dd")">
+                            </div>
+                            
+                            <!-- Search Button -->
+                            <div class="col-md-2">
+                                <label class="form-label d-block">&nbsp;</label>
+                                <button type="submit" class="btn btn-booking btn-lg w-100">
+                                    <i class="fas fa-search me-2"></i>
+                                    Search Cars
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="filter-sidebar">
+                <h5 class="mb-3">
+                    <i class="fas fa-filter me-2"></i>
+                    Filter Results
+                </h5>
+                
+                <!-- Price Range -->
+                <div class="mb-4">
+                    <h6 class="fw-semibold mb-3">Price Range (per day)</h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <input type="number" class="form-control" placeholder="Min" name="minPrice">
+                        </div>
+                        <div class="col-6">
+                            <input type="number" class="form-control" placeholder="Max" name="maxPrice">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Car Category -->
+                <div class="mb-4">
+                    <h6 class="fw-semibold mb-3">Car Category</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="category" value="Economy">
+                        <label class="form-check-label">
+                            <i class="fas fa-car category-icon"></i>
+                            Economy
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="category" value="Compact">
+                        <label class="form-check-label">
+                            <i class="fas fa-car category-icon"></i>
+                            Compact
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="category" value="SUV">
+                        <label class="form-check-label">
+                            <i class="fas fa-truck category-icon"></i>
+                            SUV
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="category" value="Luxury">
+                        <label class="form-check-label">
+                            <i class="fas fa-gem category-icon"></i>
+                            Luxury
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Features -->
+                <div class="mb-4">
+                    <h6 class="fw-semibold mb-3">Features</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="features" value="aircon">
+                        <label class="form-check-label">Air Conditioning</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="features" value="automatic">
+                        <label class="form-check-label">Automatic Transmission</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="features" value="gps">
+                        <label class="form-check-label">GPS Navigation</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="features" value="bluetooth">
+                        <label class="form-check-label">Bluetooth</label>
+                    </div>
+                </div>
+                
+                <!-- Seats -->
+                <div class="mb-4">
+                    <h6 class="fw-semibold mb-3">Number of Seats</h6>
+                    <select class="form-select" name="seats">
+                        <option value="">Any</option>
+                        <option value="2">2 seats</option>
+                        <option value="4">4 seats</option>
+                        <option value="5">5 seats</option>
+                        <option value="7">7+ seats</option>
+                    </select>
+                </div>
+                
+                <button type="button" class="btn btn-outline-secondary w-100 mb-2" onclick="clearFilters()">
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+        
+        <!-- Car Listings -->
+        <div class="col-lg-9">
+            <!-- Results Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="mb-1">Available Cars</h4>
+                    <p class="text-muted mb-0">@Model.Count() cars found</p>
+                </div>
+                <div>
+                    <select class="form-select" style="width: auto;" name="sortBy">
+                        <option value="price_asc">Price (Low to High)</option>
+                        <option value="price_desc">Price (High to Low)</option>
+                        <option value="name">Name</option>
+                        <option value="category">Category</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Car Cards -->
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var car in Model)
+                {
+                    <div class="car-card">
+                        <div class="row g-0">
+                            <!-- Car Image -->
+                            <div class="col-md-4 position-relative">
+                                <img src="https://via.placeholder.com/300x200/f8f9fa/6c757d?text=@Uri.EscapeDataString(car.Name)" 
+                                     alt="@car.Name" class="car-image">
+                                <div class="availability-badge @(car.IsAvailable ? "available" : "unavailable")">
+                                    @(car.IsAvailable ? "Available" : "Not Available")
+                                </div>
+                            </div>
+                            
+                            <!-- Car Details -->
+                            <div class="col-md-5">
+                                <div class="p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <h5 class="mb-0 me-2">@car.Name</h5>
+                                        <span class="location-tag">@car.CarType?.Category</span>
+                                    </div>
+                                    
+                                    <p class="text-muted mb-3 small">@car.Description</p>
+                                    
+                                    <!-- Car Features -->
+                                    <div class="mb-3">
+                                        @if (car.CarType != null)
+                                        {
+                                            <div class="feature-tag">
+                                                <i class="fas fa-users me-1"></i>
+                                                @car.CarType.Seats seats
+                                            </div>
+                                            <div class="feature-tag">
+                                                <i class="fas fa-door-open me-1"></i>
+                                                @car.CarType.Doors doors
+                                            </div>
+                                            @if (car.CarType.HasAirConditioning)
+                                            {
+                                                <div class="feature-tag">
+                                                    <i class="fas fa-snowflake me-1"></i>
+                                                    A/C
+                                                </div>
+                                            }
+                                            @if (car.CarType.HasAutomaticTransmission)
+                                            {
+                                                <div class="feature-tag">
+                                                    <i class="fas fa-cog me-1"></i>
+                                                    Auto
+                                                </div>
+                                            }
+                                            @if (car.CarType.HasGPS)
+                                            {
+                                                <div class="feature-tag">
+                                                    <i class="fas fa-route me-1"></i>
+                                                    GPS
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                    
+                                    <!-- Location Info -->
+                                    <div class="small text-muted">
+                                        <div class="mb-1">
+                                            <i class="fas fa-map-marker-alt text-success me-1"></i>
+                                            Pickup: @car.PickupLocation?.Name, @car.PickupLocation?.City
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                            Dropoff: @car.DropoffLocation?.Name, @car.DropoffLocation?.City
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Price and Actions -->
+                            <div class="col-md-3">
+                                <div class="p-3 h-100 d-flex flex-column justify-content-between">
+                                    <div class="text-end">
+                                        <div class="small text-muted mb-1">Price per day</div>
+                                        <div class="price-tag mb-3">$@car.DailyRate.ToString("N0")</div>
+                                        
+                                        <div class="small text-muted mb-3">
+                                            <div class="rating-stars">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="far fa-star"></i>
+                                            </div>
+                                            <div class="mt-1">4.2 (128 reviews)</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        @if (car.IsAvailable)
+                                        {
+                                            <a href="@Url.Action("Details", new { id = car.Id })" 
+                                               class="btn btn-booking">
+                                                <i class="fas fa-eye me-1"></i>
+                                                View Details
+                                            </a>
+                                            <a href="@Url.Action("Book", new { id = car.Id })" 
+                                               class="btn btn-outline-primary">
+                                                <i class="fas fa-calendar-check me-1"></i>
+                                                Book Now
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-secondary" disabled>
+                                                <i class="fas fa-times me-1"></i>
+                                                Not Available
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <!-- No Results -->
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-car fa-3x text-muted"></i>
+                    </div>
+                    <h4 class="text-muted">No cars found</h4>
+                    <p class="text-muted">Try adjusting your search criteria or filters</p>
+                    <button type="button" class="btn btn-primary" onclick="clearFilters()">
+                        Clear All Filters
+                    </button>
+                </div>
+            }
+            
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages != null && (int)ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="Car rental pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="?page=@i">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Admin Actions (for authenticated admin users) -->
+@if (User.IsInRole("Admin"))
+{
+    <div class="position-fixed bottom-0 end-0 p-3">
+        <div class="dropdown">
+            <button class="btn btn-success rounded-circle" type="button" data-bs-toggle="dropdown">
+                <i class="fas fa-plus fa-lg"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="@Url.Action("Create")">
+                    <i class="fas fa-car me-2"></i>Add New Car
+                </a></li>
+                <li><a class="dropdown-item" href="@Url.Action("ManageBookings")">
+                    <i class="fas fa-calendar me-2"></i>Manage Bookings
+                </a></li>
+                <li><a class="dropdown-item" href="@Url.Action("Reports")">
+                    <i class="fas fa-chart-bar me-2"></i>View Reports
+                </a></li>
+            </ul>
+        </div>
+    </div>
+}
+
+<script>
+    // Filter functionality
+    function clearFilters() {
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+        document.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+        document.getElementById('searchForm').submit();
+    }
+    
+    // Auto-submit form when filters change
+    document.querySelectorAll('.filter-sidebar input, .filter-sidebar select').forEach(element => {
+        element.addEventListener('change', function() {
+            setTimeout(() => {
+                document.getElementById('searchForm').submit();
+            }, 300);
+        });
+    });
+    
+    // Date validation
+    document.addEventListener('DOMContentLoaded', function() {
+        const pickupDate = document.querySelector('input[name="pickupDate"]');
+        const dropoffDate = document.querySelector('input[name="dropoffDate"]');
+        
+        pickupDate.addEventListener('change', function() {
+            dropoffDate.min = this.value;
+            if (dropoffDate.value < this.value) {
+                dropoffDate.value = this.value;
+            }
+        });
+    });
+    
+    // Smooth scroll for search results
+    document.getElementById('searchForm').addEventListener('submit', function() {
+        setTimeout(() => {
+            document.querySelector('.col-lg-9').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }, 100);
+    });
+</script>

@@ -18,7 +18,7 @@ namespace TH_WEB.Controllers
             _context = context;
         }
         
-        public async Task<IActionResult> Index(string city = null, DateTime? checkIn = null, DateTime? checkOut = null, int guests = 1)
+        public async Task<IActionResult> Index(string city = "", DateTime? checkIn = null, DateTime? checkOut = null, int guests = 1)
         {
             var query = _context.Hotels.AsQueryable();
             

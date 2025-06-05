@@ -1,10 +1,13 @@
 // Data/ApplicationDbContext.cs
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TH_WEB.Models;
+using TH_WEB.Areas.Attractions.Models;
+using System;
 
 namespace TH_WEB.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -14,12 +17,34 @@ namespace TH_WEB.Data
         public DbSet<Hotel> Hotels { get; set; } = null!;
         public DbSet<Room> Rooms { get; set; } = null!;
         public DbSet<Booking> Bookings { get; set; } = null!;
-        public DbSet<Review> Reviews { get; set; } = null!;
+        public DbSet<TH_WEB.Models.Review> Reviews { get; set; } = null!;
         public DbSet<Offer> Offers { get; set; } = null!;
+        public DbSet<HotelImage> HotelImages { get; set; } = null!;
+        public DbSet<TravelPackage> TravelPackages { get; set; } = null!;
+        public DbSet<CarRental> CarRentals { get; set; } = null!;
+        public DbSet<CarRentalBooking> CarRentalBookings { get; set; } = null!;
+        public DbSet<PackageBooking> PackageBookings { get; set; } = null!;
+        public DbSet<PackageItinerary> PackageItineraries { get; set; } = null!;
+        public DbSet<PackageExtra> PackageExtras { get; set; } = null!;
+        public DbSet<PackageFAQ> PackageFAQs { get; set; } = null!;
+        public DbSet<CarType> CarTypes { get; set; } = null!;
+        public DbSet<Location> Locations { get; set; } = null!;
+        public DbSet<RentalLocation> RentalLocations { get; set; } = null!;
+        public DbSet<CarRentalExtra> CarRentalExtras { get; set; } = null!;
+        public DbSet<Attraction> Attractions { get; set; } = null!;
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
+            // Configure decimal precision for Attraction model
+            modelBuilder.Entity<Attraction>()
+                .Property(a => a.Price)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Attraction>()
+                .Property(a => a.Rating)
+                .HasPrecision(3, 2);
             
             // Avoid multiple cascade paths
             modelBuilder.Entity<Booking>()
@@ -33,6 +58,103 @@ namespace TH_WEB.Data
                 .WithMany(r => r.Bookings)
                 .HasForeignKey(b => b.RoomId)
                 .OnDelete(DeleteBehavior.NoAction);
+            
+            // Configure relationships and constraints
+            modelBuilder.Entity<Hotel>()
+                .HasMany(h => h.Rooms)
+                .WithOne(r => r.Hotel)
+                .HasForeignKey(r => r.HotelId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Hotel>()
+                .HasMany(h => h.Images)
+                .WithOne(hi => hi.Hotel)
+                .HasForeignKey(hi => hi.HotelId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Hotel>()
+                .HasMany(h => h.Reviews)
+                .WithOne(hr => hr.Hotel)
+                .HasForeignKey(hr => hr.HotelId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Room>()
+                .HasMany(r => r.Bookings)
+                .WithOne(b => b.Room)
+                .HasForeignKey(b => b.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TravelPackage>()
+                .HasOne(p => p.Hotel)
+                .WithMany()
+                .HasForeignKey(p => p.HotelId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TravelPackage>()
+                .HasOne(p => p.CarRental)
+                .WithMany()
+                .HasForeignKey(p => p.CarRentalId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CarRental>()
+                .HasOne(c => c.Location)
+                .WithMany(l => l.CarRentals)
+                .HasForeignKey(c => c.LocationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CarRental>()
+                .HasOne(c => c.PickupLocation)
+                .WithMany(l => l.PickupLocations)
+                .HasForeignKey(c => c.PickupLocationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CarRental>()
+                .HasOne(c => c.DropoffLocation)
+                .WithMany(l => l.DropoffLocations)
+                .HasForeignKey(c => c.DropoffLocationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CarRentalExtra>()
+                .HasOne(e => e.CarRentalBooking)
+                .WithMany(b => b.Extras)
+                .HasForeignKey(e => e.CarRentalBookingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CarRentalBooking>()
+                .HasOne(b => b.CarRental)
+                .WithMany(c => c.CarRentalBookings)
+                .HasForeignKey(b => b.CarRentalId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PackageBooking>()
+                .HasOne(b => b.TravelPackage)
+                .WithMany(p => p.Bookings)
+                .HasForeignKey(b => b.PackageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TravelPackage>()
+                .HasMany(p => p.Itinerary)
+                .WithOne(i => i.Package)
+                .HasForeignKey(i => i.PackageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TravelPackage>()
+                .HasMany(p => p.Extras)
+                .WithOne(e => e.Package)
+                .HasForeignKey(e => e.PackageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TravelPackage>()
+                .HasMany(p => p.FAQs)
+                .WithOne(f => f.Package)
+                .HasForeignKey(f => f.PackageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TH_WEB.Models.Review>()
+                .HasOne(r => r.TravelPackage)
+                .WithMany(p => p.Reviews)
+                .HasForeignKey(r => r.TravelPackageId)
+                .OnDelete(DeleteBehavior.Cascade);
             
             // Seed data for Hotels
             modelBuilder.Entity<Hotel>().HasData(
@@ -153,47 +275,45 @@ namespace TH_WEB.Data
                     HotelChain = "EzBooking",
                     HotelType = "Retreat",
                     StarRating = 5,
-                    Policies = "Pets allowed.",
-                    CancellationPolicy = "Free cancellation within 48 hours.",
-                    LanguagesSpoken = "English, French",
-                    TotalReviews = 700,
-                    TotalBookings = 2500,
+                    Policies = "No smoking in rooms.",
+                    CancellationPolicy = "Free cancellation within 24 hours.",
+                    LanguagesSpoken = "English, Vietnamese",
+                    TotalReviews = 1200,
+                    TotalBookings = 5000,
                     PaymentOptions = "Credit Card, Cash",
                     AcceptsCreditCards = true,
                     CreatedAt = new DateTime(2018, 1, 1),
                     UpdatedAt = new DateTime(2024, 6, 1),
                     Email = "mountain@ezbooking.com",
-                    Phone = "0111222333"
+                    Phone = "0112233445"
                 }
             );
             
-            // Seed data for Rooms
             modelBuilder.Entity<Room>().HasData(
                 new Room
                 {
                     Id = 1,
                     HotelId = 1,
                     RoomNumber = "101",
-                    RoomType = "Deluxe",
-                    Description = "Spacious deluxe room with city view.",
-                    Price = 199.99m,
-                    DiscountedPrice = 179.99m,
+                    RoomType = "Standard",
+                    Price = 150.00m,
+                    Description = "A comfortable standard room with city view.",
                     MaxOccupancy = 2,
                     AdultCapacity = 2,
-                    ChildCapacity = 1,
+                    ChildCapacity = 0,
                     IsAvailable = true,
                     IsActive = true,
                     IsFeatured = false,
-                    SquareMeters = 35,
+                    SquareMeters = 30,
                     BedType = "King",
                     BedCount = 1,
                     ViewType = "City",
-                    Floor = "10",
+                    Floor = "1",
                     HasPrivateBathroom = true,
                     HasAirConditioning = true,
                     HasTV = true,
                     HasWifi = true,
-                    HasMinibar = true,
+                    HasMinibar = false,
                     HasSafe = true,
                     HasWorkDesk = true,
                     HasHairDryer = true,
@@ -204,32 +324,31 @@ namespace TH_WEB.Data
                     HasCoffeemaker = true,
                     HasBathtub = true,
                     HasShower = true,
-                    MainImageUrl = "/images/rooms/deluxe-king.jpg",
+                    MainImageUrl = "/images/rooms/standard-city.jpg",
                     CancellationPolicy = "Free cancellation within 24 hours.",
                     BreakfastPolicy = "Included",
-                    CreatedAt = new DateTime(2024, 1, 1),
-                    UpdatedAt = new DateTime(2024, 6, 1)
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 },
                 new Room
                 {
                     Id = 2,
                     HotelId = 1,
-                    RoomNumber = "201",
-                    RoomType = "Suite",
-                    Description = "Luxury suite with separate living area and city view.",
-                    Price = 299.99m,
-                    DiscountedPrice = 269.99m,
-                    MaxOccupancy = 2,
+                    RoomNumber = "102",
+                    RoomType = "Deluxe",
+                    Price = 200.00m,
+                    Description = "Spacious deluxe room with ocean view.",
+                    MaxOccupancy = 3,
                     AdultCapacity = 2,
                     ChildCapacity = 1,
                     IsAvailable = true,
                     IsActive = true,
-                    IsFeatured = true,
-                    SquareMeters = 50,
+                    IsFeatured = false,
+                    SquareMeters = 35,
                     BedType = "Queen",
                     BedCount = 2,
-                    ViewType = "City",
-                    Floor = "20",
+                    ViewType = "Ocean",
+                    Floor = "10",
                     HasPrivateBathroom = true,
                     HasAirConditioning = true,
                     HasTV = true,
@@ -245,80 +364,108 @@ namespace TH_WEB.Data
                     HasCoffeemaker = true,
                     HasBathtub = true,
                     HasShower = true,
-                    MainImageUrl = "/images/rooms/executive-suite.jpg",
-                    CancellationPolicy = "Non-refundable.",
-                    BreakfastPolicy = "Available for fee",
-                    CreatedAt = new DateTime(2024, 2, 1),
-                    UpdatedAt = new DateTime(2024, 6, 1)
+                    MainImageUrl = "/images/rooms/deluxe-ocean.jpg",
+                    CancellationPolicy = "Free cancellation within 24 hours.",
+                    BreakfastPolicy = "Included",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 },
                 new Room
                 {
                     Id = 3,
                     HotelId = 2,
-                    RoomNumber = "301",
-                    RoomType = "Standard",
-                    Description = "Comfortable room with two double beds.",
-                    Price = 149.99m,
-                    DiscountedPrice = 139.99m,
+                    RoomNumber = "501",
+                    RoomType = "Suite",
+                    Price = 350.00m,
+                    Description = "Luxury suite with separate living area.",
                     MaxOccupancy = 4,
                     AdultCapacity = 2,
                     ChildCapacity = 2,
                     IsAvailable = true,
                     IsActive = true,
-                    IsFeatured = false,
-                    SquareMeters = 30,
-                    BedType = "Twin",
-                    BedCount = 2,
+                    IsFeatured = true,
+                    SquareMeters = 50,
+                    BedType = "King",
+                    BedCount = 1,
                     ViewType = "City",
                     Floor = "5",
                     HasPrivateBathroom = true,
                     HasAirConditioning = true,
                     HasTV = true,
                     HasWifi = true,
-                    HasMinibar = false,
-                    HasSafe = false,
+                    HasMinibar = true,
+                    HasSafe = true,
                     HasWorkDesk = true,
                     HasHairDryer = true,
                     HasBalcony = false,
                     IsNonSmoking = true,
-                    HasRoomService = false,
-                    HasIron = false,
-                    HasCoffeemaker = false,
-                    HasBathtub = false,
+                    HasRoomService = true,
+                    HasIron = true,
+                    HasCoffeemaker = true,
+                    HasBathtub = true,
                     HasShower = true,
-                    MainImageUrl = "/images/rooms/standard-double.jpg",
+                    MainImageUrl = "/images/rooms/suite-city.jpg",
                     CancellationPolicy = "Free cancellation within 48 hours.",
-                    BreakfastPolicy = "Included",
-                    CreatedAt = new DateTime(2024, 3, 1),
-                    UpdatedAt = new DateTime(2024, 6, 1)
+                    BreakfastPolicy = "Available for fee",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 }
             );
-            
-            // Seed data for Offers
+
             modelBuilder.Entity<Offer>().HasData(
                 new Offer
                 {
                     Id = 1,
-                    Title = "Summer Getaway Deal",
-                    Description = "Save up to 20% on your summer vacation with our special offer.",
-                    DiscountPercentage = 20,
-                    ImageUrl = "/images/offers/summer-getaway.jpg",
-                    StartDate = new DateTime(2025, 6, 1),
-                    EndDate = new DateTime(2025, 8, 31),
-                    PromoCode = "SUMMER20",
-                    IsActive = true
+                    HotelId = 1,
+                    Title = "Summer Discount",
+                    Description = "Get 15% off on all room types for stays in June and July.",
+                    DiscountPercentage = 15,
+                    StartDate = new DateTime(2024, 6, 1),
+                    EndDate = new DateTime(2024, 7, 31),
+                    IsActive = true,
+                }
+            );
+
+            modelBuilder.Entity<CarType>().HasData(
+                new CarType { Id = 1, Name = "Sedan", Category = CarCategory.Economy, Description = "Comfortable sedan", Seats = 4, Doors = 4, HasAirConditioning = true, HasAutomaticTransmission = true, HasGPS = true, HasBluetooth = true, HasUSBPort = true, HasChildSeat = false, HasLuggageSpace = true },
+                new CarType { Id = 2, Name = "SUV", Category = CarCategory.SUV, Description = "Spacious SUV", Seats = 5, Doors = 4, HasAirConditioning = true, HasAutomaticTransmission = true, HasGPS = true, HasBluetooth = true, HasUSBPort = true, HasChildSeat = true, HasLuggageSpace = true }
+            );
+
+            modelBuilder.Entity<Location>().HasData(
+                new Location { Id = 1, Name = "Miami International Airport", Address = "2100 NW 42nd Ave", City = "Miami", Country = "USA", PostalCode = "33142", Latitude = 25.7959m, Longitude = -80.2902m },
+                new Location { Id = 2, Name = "New York City", Address = "Times Square", City = "New York", Country = "USA", PostalCode = "10036", Latitude = 40.7580m, Longitude = -73.9855m }
+            );
+
+             modelBuilder.Entity<CarRental>().HasData(
+                new CarRental
+                {
+                    Id = 1,
+                    Name = "Economy Sedan",
+                    Description = "Fuel-efficient economy car",
+                    CarTypeId = 1, // Sedan
+                    LocationId = 1, // Miami Airport
+                    PickupLocationId = 1, // Miami Airport
+                    DropoffLocationId = 1, // Miami Airport
+                    DailyRate = 35.00m,
+                    IsAvailable = true,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 },
-                new Offer
+                new CarRental
                 {
                     Id = 2,
-                    Title = "Weekend Escape",
-                    Description = "Book a weekend stay and get a free breakfast for two.",
-                    DiscountPercentage = 15,
-                    ImageUrl = "/images/offers/weekend-escape.jpg",
-                    StartDate = new DateTime(2025, 1, 1),
-                    EndDate = new DateTime(2025, 12, 31),
-                    PromoCode = "WEEKEND15",
-                    IsActive = true
+                    Name = "Standard SUV",
+                    Description = "Spacious SUV for families",
+                    CarTypeId = 2, // SUV
+                    LocationId = 2, // New York City
+                    PickupLocationId = 2, // New York City
+                    DropoffLocationId = 2, // New York City
+                    DailyRate = 60.00m,
+                    IsAvailable = true,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 }
             );
         }

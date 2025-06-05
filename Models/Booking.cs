@@ -11,9 +11,10 @@ namespace TH_WEB.Models
         [Key]
         public int Id { get; set; }
 
-        public int HotelId { get; set; }
-
+        [Required]
         public int RoomId { get; set; }
+
+        public int? HotelId { get; set; }
 
         [StringLength(100)]
         public string? UserId { get; set; }
@@ -36,76 +37,37 @@ namespace TH_WEB.Models
         [Required]
         public DateTime CheckOutDate { get; set; }
 
-        public int NumberOfGuests { get; set; }
-
-        public int NumberOfRooms { get; set; }
+        public int NumberOfAdults { get; set; }
+        public int NumberOfChildren { get; set; }
+        public int NumberOfInfants { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal TotalPrice { get; set; }
 
-        public string Status { get; set; } = "Pending";
+        public BookingStatus Status { get; set; } = BookingStatus.Pending;
 
-        [StringLength(500)]
-        public string SpecialRequests { get; set; } = string.Empty;
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        // Thông tin thanh toán
         public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
 
         [StringLength(100)]
-        public string PaymentMethod { get; set; } = string.Empty;
+        public string BookingReference { get; set; } = string.Empty;
 
-        [StringLength(100)]
-        public string TransactionId { get; set; } = string.Empty;
+        [StringLength(1000)]
+        public string SpecialRequests { get; set; } = string.Empty;
 
-        public bool IsFullyPaid { get; set; } = false;
-
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal AmountPaid { get; set; } = 0;
-
-        // Thông tin quốc tịch và giấy tờ
-        [StringLength(100)]
-        public string Nationality { get; set; } = string.Empty;
-
-        [StringLength(50)]
-        public string IdentificationType { get; set; } = string.Empty;
-
-        [StringLength(50)]
-        public string IdentificationNumber { get; set; } = string.Empty;
-
-        // Thông tin hủy đặt phòng
-        public bool IsCancelled { get; set; } = false;
-
-        public DateTime? CancellationDate { get; set; }
-
-        [StringLength(500)]
-        public string CancellationReason { get; set; } = string.Empty;
-
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal? RefundAmount { get; set; }
-
-        // Thông tin check-in, check-out thực tế
-        public DateTime? ActualCheckInDate { get; set; }
-
-        public DateTime? ActualCheckOutDate { get; set; }
-
-        // Thông tin bổ sung
-        [StringLength(200)]
-        public string BookingSource { get; set; } = "Website";
-
-        public bool HasReviewed { get; set; } = false;
-
-        // Mối quan hệ
-        [ForeignKey("HotelId")]
-        public virtual Hotel Hotel { get; set; } = null!;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("RoomId")]
         public virtual Room Room { get; set; } = null!;
 
-        public virtual ICollection<BookingAddon> Addons { get; set; } = new List<BookingAddon>();
+        [ForeignKey("HotelId")]
+        public virtual Hotel? Hotel { get; set; }
+
+        public virtual ICollection<BookingAmenity> Amenities { get; set; } = new List<BookingAmenity>();
+
+        public virtual ICollection<BookingService> Services { get; set; } = new List<BookingService>();
+
+        public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
         // Aliases for backward compatibility
         public DateTime CheckIn => CheckInDate;
@@ -113,28 +75,7 @@ namespace TH_WEB.Models
         public DateTime BookingDate => CreatedAt;
     }
 
-    public enum BookingStatus
-    {
-        Pending,
-        Confirmed,
-        CheckedIn,
-        CheckedOut,
-        Cancelled,
-        NoShow
-    }
-
-    public enum PaymentStatus
-    {
-        Pending,
-        Authorized,
-        Paid,
-        PartiallyPaid,
-        Refunded,
-        PartiallyRefunded,
-        Failed
-    }
-
-    public class BookingAddon
+    public class BookingAmenity
     {
         [Key]
         public int Id { get; set; }
@@ -145,7 +86,7 @@ namespace TH_WEB.Models
         [StringLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        [StringLength(500)]
+        [StringLength(255)]
         public string Description { get; set; } = string.Empty;
 
         [Column(TypeName = "decimal(18, 2)")]
@@ -160,51 +101,29 @@ namespace TH_WEB.Models
         public virtual Booking Booking { get; set; } = null!;
     }
 
-    public class Offer
+    public class BookingService
     {
         [Key]
         public int Id { get; set; }
 
-        public int HotelId { get; set; }
+        public int BookingId { get; set; }
 
         [Required]
         [StringLength(100)]
-        public string Title { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
-        [StringLength(1000)]
+        [StringLength(255)]
         public string Description { get; set; } = string.Empty;
 
-        [Range(0, 100)]
-        public int DiscountPercentage { get; set; } = 0;
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal Price { get; set; }
 
-        // Alias for backward compatibility
-        public int DiscountPercent => DiscountPercentage;
+        public int Quantity { get; set; } = 1;
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal? DiscountAmount { get; set; }
+        public decimal TotalPrice { get; set; }
 
-        [Required]
-        public DateTime StartDate { get; set; }
-
-        [Required]
-        public DateTime EndDate { get; set; }
-
-        public int? MinimumStay { get; set; } // Số đêm tối thiểu
-
-        [StringLength(100)]
-        public string PromoCode { get; set; } = string.Empty;
-
-        [StringLength(500)]
-        public string TermsAndConditions { get; set; } = string.Empty;
-
-        [StringLength(500)]
-        public string ImageUrl { get; set; } = string.Empty;
-
-        public bool IsActive { get; set; } = true;
-
-        public bool IsExclusive { get; set; } = false;
-
-        [ForeignKey("HotelId")]
-        public virtual Hotel Hotel { get; set; } = null!;
+        [ForeignKey("BookingId")]
+        public virtual Booking Booking { get; set; } = null!;
     }
 }

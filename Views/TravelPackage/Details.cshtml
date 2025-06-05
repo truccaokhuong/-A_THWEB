@@ -1,0 +1,126 @@
+@model TH_WEB.Models.TravelPackage
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>@Model.Name</h1>
+            <p class="lead">@Model.Description</p>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Package Details</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Destination:</strong> @Model.Destination</p>
+                            <p><strong>Duration:</strong> @Model.Duration days</p>
+                            <p><strong>Start Date:</strong> @Model.StartDate.ToShortDateString()</p>
+                            <p><strong>End Date:</strong> @Model.EndDate.ToShortDateString()</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Price per Adult:</strong> $@Model.AdultPrice</p>
+                            <p><strong>Price per Child:</strong> $@Model.ChildPrice</p>
+                            <p><strong>Price per Infant:</strong> $@Model.InfantPrice</p>
+                            <p><strong>Total Price:</strong> $@Model.TotalPrice</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Package Features</h5>
+                    <ul class="list-unstyled">
+                        @if (Model.IncludesHotel)
+                        {
+                            <li><i class="fas fa-hotel"></i> Hotel Accommodation</li>
+                        }
+                        @if (Model.IncludesBreakfast)
+                        {
+                            <li><i class="fas fa-coffee"></i> Breakfast Included</li>
+                        }
+                        @if (Model.IncludesMeals)
+                        {
+                            <li><i class="fas fa-utensils"></i> Meals Included</li>
+                        }
+                        @if (Model.IncludesTransfers)
+                        {
+                            <li><i class="fas fa-car"></i> Airport Transfers</li>
+                        }
+                        @if (Model.IncludesTours)
+                        {
+                            <li><i class="fas fa-map-marked-alt"></i> Guided Tours</li>
+                        }
+                        @if (Model.IncludesInsurance)
+                        {
+                            <li><i class="fas fa-shield-alt"></i> Travel Insurance</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            @if (Model.Itinerary.Any())
+            {
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Itinerary</h5>
+                        @foreach (var day in Model.Itinerary.OrderBy(i => i.DayNumber))
+                        {
+                            <div class="mb-3">
+                                <h6>Day @day.DayNumber: @day.Title</h6>
+                                <p>@day.Description</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Model.FAQs.Any())
+            {
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Frequently Asked Questions</h5>
+                        @foreach (var faq in Model.FAQs)
+                        {
+                            <div class="mb-3">
+                                <h6>@faq.Question</h6>
+                                <p>@faq.Answer</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Book This Package</h5>
+                    <form asp-action="Book" asp-controller="Booking" method="post">
+                        <input type="hidden" name="packageId" value="@Model.Id" />
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Number of Adults</label>
+                            <input type="number" class="form-control" name="adults" min="1" max="@Model.MaxAdults" value="1" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Number of Children</label>
+                            <input type="number" class="form-control" name="children" min="0" max="@Model.MaxChildren" value="0" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Number of Infants</label>
+                            <input type="number" class="form-control" name="infants" min="0" max="@Model.MaxInfants" value="0" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Book Now</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

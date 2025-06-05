@@ -1,0 +1,241 @@
+@{
+    ViewData["Title"] = "Sign in or create an account";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - EzBooking</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="~/Identity/identity.css" rel="stylesheet">
+</head>
+<body>
+    
+    
+    <!-- Main Content -->
+    <div class="auth-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                    <div class="auth-card">
+                        <!-- Tab Container -->
+                        <div class="tab-container">
+                            <div class="auth-header">
+                                <div class="tab-buttons">
+                                    <button class="tab-btn active" onclick="switchTab('signin')">Sign in</button>
+                                    <button class="tab-btn" onclick="switchTab('register')">Register</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Sign In Tab -->
+                            <div id="signin-tab" class="tab-content active">
+                                <div class="auth-body">
+                                    <h1>Welcome back</h1>
+                                    <p class="text-muted mb-4">Sign in to your EzBooking account</p>
+                                    
+                                    <!-- Social Login -->
+                                    <div class="social-login">
+                                        <button class="btn-google">
+                                            <i class="fab fa-google"></i>
+                                            Continue with Google
+                                        </button>
+                                        <button class="btn-facebook">
+                                            <i class="fab fa-facebook-f"></i>
+                                            Continue with Facebook
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="divider">
+                                        <span>or</span>
+                                    </div>
+                                    
+                                    <!-- Login Form -->
+                                    <form id="loginForm">
+                                        <div class="general-error-message" id="loginGeneralError"></div>
+                                        <div class="form-group">
+                                            <label class="form-label">Email address</label>
+                                            <input type="email" class="form-control" id="loginEmail" placeholder="Enter your email" required>
+                                            <div class="error-message" id="loginEmailError"></div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="form-label">Password</label>
+                                            <div class="password-toggle">
+                                                <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
+                                                <button type="button" class="password-toggle-btn" onclick="togglePassword('loginPassword')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                            <div class="error-message" id="loginPasswordError"></div>
+                                        </div>
+                                        
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="rememberMe">
+                                            <label class="form-check-label" for="rememberMe">
+                                                Keep me signed in
+                                            </label>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary">
+                                            Sign in
+                                        </button>
+                                        
+                                        <div class="forgot-password">
+                                            <a href="#" onclick="showForgotPassword()">Forgot your password?</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <!-- Register Tab -->
+                            <div id="register-tab" class="tab-content">
+                                <div class="auth-body">
+                                    <h1>Create account</h1>
+                                    <p class="text-muted mb-3">Join millions of travelers worldwide</p>
+                                    
+                                    <!-- Benefits -->
+                                    <ul class="benefits-list">
+                                        <li>Faster booking for next time</li>
+                                        <li>Track your reservations</li>
+                                        <li>Get secret deals and discounts</li>
+                                    </ul>
+                                    
+                                    <!-- Social Login -->
+                                    <div class="social-login">
+                                        <button class="btn-google">
+                                            <i class="fab fa-google"></i>
+                                            Sign up with Google
+                                        </button>
+                                        <button class="btn-facebook">
+                                            <i class="fab fa-facebook-f"></i>
+                                            Sign up with Facebook
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="divider">
+                                        <span>or</span>
+                                    </div>
+                                    
+                                    <!-- Register Form -->
+                                    <form id="registerForm">
+                                        <div class="general-error-message" id="registerGeneralError"></div>
+                                        <div class="general-success-message" id="registerGeneralSuccess" style="display: none;"></div>
+                                        <div class="form-group">
+                                            <label class="form-label">Email address</label>
+                                            <input type="email" class="form-control" id="registerEmail" placeholder="Enter your email" required>
+                                            <div class="error-message" id="registerEmailError"></div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="form-label">First name</label>
+                                            <input type="text" class="form-control" id="firstName" placeholder="Enter your first name" required>
+                                            <div class="error-message" id="firstNameError"></div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="form-label">Last name</label>
+                                            <input type="text" class="form-control" id="lastName" placeholder="Enter your last name" required>
+                                            <div class="error-message" id="lastNameError"></div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="form-label">Password</label>
+                                            <div class="password-toggle">
+                                                <input type="password" class="form-control" id="registerPassword" placeholder="Create a password" required>
+                                                <button type="button" class="password-toggle-btn" onclick="togglePassword('registerPassword')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                            <div class="strength-meter">
+                                                <div class="strength-fill" id="strengthFill"></div>
+                                            </div>
+                                            <small class="text-muted">Use 8+ characters with a mix of letters, numbers & symbols</small>
+                                            <div class="error-message" id="registerPasswordError"></div>
+                                        </div>
+                                        
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                            <label class="form-check-label" for="agreeTerms">
+                                                I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="newsletter">
+                                            <label class="form-check-label" for="newsletter">
+                                                Send me EzBooking deals, travel inspiration and updates via email
+                                            </label>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary">
+                                            Create account
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">Reset your password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-4">Enter your email address and we'll send you a link to reset your password.</p>
+                    <form id="forgotPasswordForm">
+                        <div class="general-error-message" id="forgotPasswordGeneralError"></div>
+                        <div class="general-success-message" id="forgotPasswordGeneralSuccess" style="display: none;"></div>
+                        <div class="form-group">
+                            <label class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="forgotEmail" placeholder="Enter your email" required>
+                            <div class="error-message" id="forgotEmailError"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            Send reset link
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="~/Identity/identity.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeTab = '@ViewBag.ActiveTab';
+            if (activeTab) {
+                // Simulate a click on the correct tab button
+                const targetButton = document.querySelector(`.tab-btn[onclick="switchTab('${activeTab}')"]`);
+                if (targetButton) {
+                    targetButton.click();
+                }
+            } else {
+                 // Default to signin tab if no ViewBag value is set
+                const defaultButton = document.querySelector(`.tab-btn[onclick="switchTab('signin')"]`);
+                 if(defaultButton) {
+                     defaultButton.click();
+                 }
+            }
+        });
+    </script>
+</body>
+</html>

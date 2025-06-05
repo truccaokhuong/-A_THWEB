@@ -118,14 +118,14 @@ namespace TH_WEB.Services
 
             if (room == null) return false;
 
-            // Check if there are any overlapping bookings
-            var hasOverlappingBooking = room.Bookings.Any(b =>
-                b.Status != "Cancelled" &&
-                ((checkIn >= b.CheckInDate && checkIn < b.CheckOutDate) ||
-                 (checkOut > b.CheckInDate && checkOut <= b.CheckOutDate) ||
-                 (checkIn <= b.CheckInDate && checkOut >= b.CheckOutDate)));
+            var isAvailable = !await _context.Bookings
+                .AnyAsync(b => b.RoomId == roomId &&
+                              b.Status != BookingStatus.Cancelled &&
+                              ((checkIn >= b.CheckInDate && checkIn < b.CheckOutDate) ||
+                               (checkOut > b.CheckInDate && checkOut <= b.CheckOutDate) ||
+                               (checkIn <= b.CheckInDate && checkOut >= b.CheckOutDate)));
 
-            return !hasOverlappingBooking;
+            return isAvailable;
         }
     }
 } 

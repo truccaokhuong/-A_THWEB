@@ -22,7 +22,7 @@ namespace TH_WEB.Controllers
         }
         
         [HttpGet]
-        public async Task<IActionResult> Create(int roomId, DateTime checkIn, DateTime checkOut, int guests)
+        public async Task<IActionResult> Create(int roomId, DateTime checkIn, DateTime checkOut, int adults, int children = 0, int infants = 0)
         {
             var room = await _context.Rooms
                 .Include(r => r.Hotel)
@@ -34,18 +34,23 @@ namespace TH_WEB.Controllers
             }
             
             int nights = (int)(checkOut - checkIn).TotalDays;
-            decimal totalPrice = room.PricePerNight * nights;
+            decimal totalPrice = room.Price * nights;
             
             var booking = new Booking
             {
                 RoomId = roomId,
+                HotelId = room.HotelId,
                 CheckInDate = checkIn,
                 CheckOutDate = checkOut,
-                NumberOfGuests = guests,
-                NumberOfRooms = 1,
+                NumberOfAdults = adults,
+                NumberOfChildren = children,
+                NumberOfInfants = infants,
                 TotalPrice = totalPrice,
                 CreatedAt = DateTime.UtcNow,
-                Status = BookingStatus.Pending.ToString()
+                Status = BookingStatus.Pending,
+                GuestName = "",
+                GuestEmail = "",
+                GuestPhone = ""
             };
             
             ViewBag.Room = room;
@@ -76,13 +81,25 @@ namespace TH_WEB.Controllers
                 return View(booking);
             }
 
-            booking.Status = BookingStatus.Pending.ToString();
             booking.CreatedAt = DateTime.UtcNow;
             booking.UpdatedAt = DateTime.UtcNow;
+            
+            if (booking.HotelId == null)
+            {
+                var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == booking.RoomId);
+                if (room != null) booking.HotelId = room.HotelId;
+            }
 
             var result = await _bookingService.CreateBookingAsync(booking);
             if (result != null)
             {
+                var userId = User.Identity?.Name;
+                if (userId != null)
+                {
+                    result.UserId = userId;
+                    await _bookingService.UpdateBookingAsync(result);
+                }
+
                 await _bookingService.SendBookingConfirmationEmailAsync(result);
                 return RedirectToAction("Confirmation", new { id = result.Id });
             }
@@ -103,7 +120,12 @@ namespace TH_WEB.Controllers
 
         public async Task<IActionResult> MyBookings()
         {
-            var userId = User.Identity.Name; // Assuming you're using ASP.NET Core Identity
+            var userId = User.Identity?.Name;
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            
             var bookings = await _bookingService.GetUserBookingsAsync(userId);
             return View(bookings);
         }
@@ -117,7 +139,7 @@ namespace TH_WEB.Controllers
                 return NotFound();
             }
 
-            booking.Status = BookingStatus.Cancelled.ToString();
+            booking.Status = BookingStatus.Cancelled;
             booking.UpdatedAt = DateTime.UtcNow;
 
             await _bookingService.UpdateBookingAsync(booking);

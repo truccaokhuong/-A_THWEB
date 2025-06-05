@@ -17,10 +17,569 @@ namespace TH_WEB.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.0")
+                .HasAnnotation("ProductVersion", "6.0.28")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.Attraction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedById")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FavoriteCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Rating")
+                        .HasPrecision(3, 2)
+                        .HasColumnType("decimal(3,2)");
+
+                    b.Property<int>("ReviewCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ViewCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Website")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ZipCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Attractions");
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.AttractionFeature", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AttractionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("IconClass")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttractionId");
+
+                    b.ToTable("AttractionFeature");
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.AttractionImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AttractionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Caption")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttractionId");
+
+                    b.ToTable("AttractionImage");
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.AttractionTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AttractionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttractionId");
+
+                    b.ToTable("AttractionTag");
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.OperatingHours", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AttractionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Friday")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Monday")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Saturday")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sunday")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Thursday")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tuesday")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Wednesday")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttractionId")
+                        .IsUnique();
+
+                    b.ToTable("OperatingHours");
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.Pricing", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<decimal?>("AdultPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("AttractionId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("ChildPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<bool>("IsFree")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("SeniorPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("StudentPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttractionId")
+                        .IsUnique();
+
+                    b.ToTable("Pricing");
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AttractionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("HelpfulCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttractionId");
+
+                    b.ToTable("Review");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
 
             modelBuilder.Entity("TH_WEB.Models.Booking", b =>
                 {
@@ -30,27 +589,10 @@ namespace TH_WEB.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime?>("ActualCheckInDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ActualCheckOutDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("AmountPaid")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("BookingSource")
+                    b.Property<string>("BookingReference")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime?>("CancellationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CancellationReason")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("CheckInDate")
                         .HasColumnType("datetime2");
@@ -76,69 +618,34 @@ namespace TH_WEB.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<bool>("HasReviewed")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("HotelId")
+                    b.Property<int?>("HotelId")
                         .HasColumnType("int");
 
-                    b.Property<string>("IdentificationNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("IdentificationType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("IsCancelled")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFullyPaid")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Nationality")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("NumberOfGuests")
+                    b.Property<int>("NumberOfAdults")
                         .HasColumnType("int");
 
-                    b.Property<int>("NumberOfRooms")
+                    b.Property<int>("NumberOfChildren")
                         .HasColumnType("int");
 
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int>("NumberOfInfants")
+                        .HasColumnType("int");
 
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("int");
-
-                    b.Property<decimal?>("RefundAmount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("RoomId")
                         .HasColumnType("int");
 
                     b.Property<string>("SpecialRequests")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("TransactionId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -153,10 +660,10 @@ namespace TH_WEB.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Bookings", (string)null);
+                    b.ToTable("Bookings");
                 });
 
-            modelBuilder.Entity("TH_WEB.Models.BookingAddon", b =>
+            modelBuilder.Entity("TH_WEB.Models.BookingAmenity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -169,8 +676,8 @@ namespace TH_WEB.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -190,7 +697,423 @@ namespace TH_WEB.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.ToTable("BookingAddon", (string)null);
+                    b.ToTable("BookingAmenity");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.BookingService", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.ToTable("BookingService");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.CarRental", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CarTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("DailyRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("DropoffLocationId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("PickupLocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RentalLocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RentalLocationId1")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarTypeId");
+
+                    b.HasIndex("DropoffLocationId");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("PickupLocationId");
+
+                    b.HasIndex("RentalLocationId");
+
+                    b.HasIndex("RentalLocationId1");
+
+                    b.ToTable("CarRentals");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CarTypeId = 1,
+                            CreatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(2055),
+                            DailyRate = 35.00m,
+                            Description = "Fuel-efficient economy car",
+                            DropoffLocationId = 1,
+                            IsActive = true,
+                            IsAvailable = true,
+                            LocationId = 1,
+                            Name = "Economy Sedan",
+                            PickupLocationId = 1,
+                            UpdatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(2055)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CarTypeId = 2,
+                            CreatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(2057),
+                            DailyRate = 60.00m,
+                            Description = "Spacious SUV for families",
+                            DropoffLocationId = 2,
+                            IsActive = true,
+                            IsAvailable = true,
+                            LocationId = 2,
+                            Name = "Standard SUV",
+                            PickupLocationId = 2,
+                            UpdatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(2058)
+                        });
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.CarRentalBooking", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime?>("ActualDropoffTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ActualPickupTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("AdditionalDriverLicense")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("AdditionalDriverName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BookingReference")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("CarRentalId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DriverEmail")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DriverName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DriverPhone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("DropoffCondition")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int?>("DropoffMileage")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("ExtrasFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("FuelLevelDropoff")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("FuelLevelPickup")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("HasAdditionalDriver")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasChildSeat")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasGPS")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("InsuranceFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("LicenseCountry")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("LicenseExpiry")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LicenseNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PickupCondition")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int?>("PickupMileage")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SecurityDeposit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("SpecialRequests")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TaxesAndFees")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarRentalId");
+
+                    b.ToTable("CarRentalBookings");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.CarRentalExtra", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CarRentalBookingId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CarRentalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("PricePerDay")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarRentalBookingId");
+
+                    b.HasIndex("CarRentalId");
+
+                    b.ToTable("CarRentalExtras");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.CarType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Doors")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("HasAirConditioning")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasAutomaticTransmission")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasBluetooth")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasChildSeat")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasGPS")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasLuggageSpace")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasUSBPort")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Seats")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CarTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Category = 0,
+                            Description = "Comfortable sedan",
+                            Doors = 4,
+                            HasAirConditioning = true,
+                            HasAutomaticTransmission = true,
+                            HasBluetooth = true,
+                            HasChildSeat = false,
+                            HasGPS = true,
+                            HasLuggageSpace = true,
+                            HasUSBPort = true,
+                            Name = "Sedan",
+                            Seats = 4
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Category = 6,
+                            Description = "Spacious SUV",
+                            Doors = 4,
+                            HasAirConditioning = true,
+                            HasAutomaticTransmission = true,
+                            HasBluetooth = true,
+                            HasChildSeat = true,
+                            HasGPS = true,
+                            HasLuggageSpace = true,
+                            HasUSBPort = true,
+                            Name = "SUV",
+                            Seats = 5
+                        });
                 });
 
             modelBuilder.Entity("TH_WEB.Models.Hotel", b =>
@@ -240,10 +1163,15 @@ namespace TH_WEB.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -304,8 +1232,8 @@ namespace TH_WEB.Migrations
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -324,6 +1252,11 @@ namespace TH_WEB.Migrations
                     b.Property<decimal?>("Latitude")
                         .HasColumnType("decimal(10,7)");
 
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<decimal?>("Longitude")
                         .HasColumnType("decimal(10,7)");
 
@@ -332,10 +1265,20 @@ namespace TH_WEB.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("ParkingPolicy")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("PaymentOptions")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PetPolicy")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -363,8 +1306,48 @@ namespace TH_WEB.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("SeoDescription")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SeoKeywords")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("SeoTitle")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("SmokingPolicy")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SpecialInstructions")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<int?>("StarRating")
                         .HasColumnType("int");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TimeZone")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("TotalBookings")
                         .HasColumnType("int");
@@ -391,7 +1374,7 @@ namespace TH_WEB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Hotels", (string)null);
+                    b.ToTable("Hotels");
 
                     b.HasData(
                         new
@@ -406,6 +1389,7 @@ namespace TH_WEB.Migrations
                             City = "Miami",
                             Country = "USA",
                             CreatedAt = new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "",
                             Description = "Experience luxury and comfort in our 5-star resort with stunning views.",
                             Email = "luxury@ezbooking.com",
                             HasAirportShuttle = false,
@@ -429,15 +1413,26 @@ namespace TH_WEB.Migrations
                             IsFeatured = false,
                             IsPetFriendly = false,
                             LanguagesSpoken = "English, Vietnamese",
+                            Location = "",
                             Name = "EzBooking Luxury Resort",
+                            ParkingPolicy = "",
                             PaymentOptions = "Credit Card, Cash",
+                            PetPolicy = "",
                             Phone = "0123456789",
                             Policies = "No smoking in rooms.",
                             PostalCode = "",
                             PricePerNight = 0m,
                             Rating = 4.8m,
                             Region = "",
+                            SeoDescription = "",
+                            SeoKeywords = "",
+                            SeoTitle = "",
+                            Slug = "",
+                            SmokingPolicy = "",
+                            SpecialInstructions = "",
                             StarRating = 5,
+                            State = "",
+                            TimeZone = "",
                             TotalBookings = 6000,
                             TotalReviews = 1500,
                             TotalRooms = 0,
@@ -458,6 +1453,7 @@ namespace TH_WEB.Migrations
                             City = "New York",
                             Country = "USA",
                             CreatedAt = new DateTime(2010, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "",
                             Description = "Located in the heart of downtown, perfect for business and leisure travelers.",
                             Email = "citycenter@ezbooking.com",
                             HasAirportShuttle = false,
@@ -481,15 +1477,26 @@ namespace TH_WEB.Migrations
                             IsFeatured = false,
                             IsPetFriendly = false,
                             LanguagesSpoken = "English",
+                            Location = "",
                             Name = "EzBooking City Center",
+                            ParkingPolicy = "",
                             PaymentOptions = "Credit Card",
+                            PetPolicy = "",
                             Phone = "0987654321",
                             Policies = "No pets allowed.",
                             PostalCode = "",
                             PricePerNight = 0m,
                             Rating = 4.5m,
                             Region = "",
+                            SeoDescription = "",
+                            SeoKeywords = "",
+                            SeoTitle = "",
+                            Slug = "",
+                            SmokingPolicy = "",
+                            SpecialInstructions = "",
                             StarRating = 4,
+                            State = "",
+                            TimeZone = "",
                             TotalBookings = 4000,
                             TotalReviews = 900,
                             TotalRooms = 0,
@@ -504,12 +1511,13 @@ namespace TH_WEB.Migrations
                             AcceptsCreditCards = true,
                             Address = "789 Mountain View Road",
                             AvailableRooms = 0,
-                            CancellationPolicy = "Free cancellation within 48 hours.",
+                            CancellationPolicy = "Free cancellation within 24 hours.",
                             CheckInTime = "15:00",
                             CheckOutTime = "11:00",
                             City = "Denver",
                             Country = "USA",
                             CreatedAt = new DateTime(2018, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "",
                             Description = "Escape to the mountains and enjoy breathtaking views and fresh air.",
                             Email = "mountain@ezbooking.com",
                             HasAirportShuttle = true,
@@ -532,18 +1540,29 @@ namespace TH_WEB.Migrations
                             IsActive = true,
                             IsFeatured = false,
                             IsPetFriendly = true,
-                            LanguagesSpoken = "English, French",
+                            LanguagesSpoken = "English, Vietnamese",
+                            Location = "",
                             Name = "EzBooking Mountain Retreat",
+                            ParkingPolicy = "",
                             PaymentOptions = "Credit Card, Cash",
-                            Phone = "0111222333",
-                            Policies = "Pets allowed.",
+                            PetPolicy = "",
+                            Phone = "0112233445",
+                            Policies = "No smoking in rooms.",
                             PostalCode = "",
                             PricePerNight = 0m,
                             Rating = 4.7m,
                             Region = "",
+                            SeoDescription = "",
+                            SeoKeywords = "",
+                            SeoTitle = "",
+                            Slug = "",
+                            SmokingPolicy = "",
+                            SpecialInstructions = "",
                             StarRating = 5,
-                            TotalBookings = 2500,
-                            TotalReviews = 700,
+                            State = "",
+                            TimeZone = "",
+                            TotalBookings = 5000,
+                            TotalReviews = 1200,
                             TotalRooms = 0,
                             UpdatedAt = new DateTime(2024, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "",
@@ -587,7 +1606,7 @@ namespace TH_WEB.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("HotelFacility", (string)null);
+                    b.ToTable("HotelFacility");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.HotelImage", b =>
@@ -626,7 +1645,75 @@ namespace TH_WEB.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("HotelImage", (string)null);
+                    b.ToTable("HotelImages");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Location", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Latitude")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Longitude")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Locations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "2100 NW 42nd Ave",
+                            City = "Miami",
+                            Country = "USA",
+                            Latitude = 25.7959m,
+                            Longitude = -80.2902m,
+                            Name = "Miami International Airport",
+                            PostalCode = "33142"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Address = "Times Square",
+                            City = "New York",
+                            Country = "USA",
+                            Latitude = 40.7580m,
+                            Longitude = -73.9855m,
+                            Name = "New York City",
+                            PostalCode = "10036"
+                        });
                 });
 
             modelBuilder.Entity("TH_WEB.Models.Offer", b =>
@@ -651,7 +1738,7 @@ namespace TH_WEB.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("HotelId")
+                    b.Property<int?>("HotelId")
                         .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
@@ -690,39 +1777,219 @@ namespace TH_WEB.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("Offers", (string)null);
+                    b.ToTable("Offers");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Description = "Save up to 20% on your summer vacation with our special offer.",
-                            DiscountPercentage = 20,
-                            EndDate = new DateTime(2025, 8, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            HotelId = 1,
-                            ImageUrl = "/images/offers/summer-getaway.jpg",
-                            IsActive = true,
-                            IsExclusive = false,
-                            PromoCode = "SUMMER20",
-                            StartDate = new DateTime(2025, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TermsAndConditions = "",
-                            Title = "Summer Getaway Deal"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Book a weekend stay and get a free breakfast for two.",
+                            Description = "Get 15% off on all room types for stays in June and July.",
                             DiscountPercentage = 15,
-                            EndDate = new DateTime(2025, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndDate = new DateTime(2024, 7, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             HotelId = 1,
-                            ImageUrl = "/images/offers/weekend-escape.jpg",
+                            ImageUrl = "",
                             IsActive = true,
                             IsExclusive = false,
-                            PromoCode = "WEEKEND15",
-                            StartDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PromoCode = "",
+                            StartDate = new DateTime(2024, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             TermsAndConditions = "",
-                            Title = "Weekend Escape"
+                            Title = "Summer Discount"
                         });
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.PackageBooking", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("NumberOfAdults")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfChildren")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfInfants")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PackageId");
+
+                    b.ToTable("PackageBookings");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.PackageExtra", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PackageId");
+
+                    b.ToTable("PackageExtras");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.PackageFAQ", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PackageId");
+
+                    b.ToTable("PackageFAQs");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.PackageItinerary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DayNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PackageId");
+
+                    b.ToTable("PackageItineraries");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.RentalLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Latitude")
+                        .HasColumnType("decimal(10,7)");
+
+                    b.Property<decimal>("Longitude")
+                        .HasColumnType("decimal(10,7)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("OpeningHours")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RentalLocations");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.Review", b =>
@@ -750,7 +2017,7 @@ namespace TH_WEB.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("HotelId")
+                    b.Property<int?>("HotelId")
                         .HasColumnType("int");
 
                     b.Property<string>("HotelResponse")
@@ -789,6 +2056,9 @@ namespace TH_WEB.Migrations
                     b.Property<decimal?>("ServiceRating")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("TravelPackageId")
+                        .HasColumnType("int");
+
                     b.Property<string>("TravelerType")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -811,7 +2081,9 @@ namespace TH_WEB.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.HasIndex("TravelPackageId");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.ReviewImage", b =>
@@ -842,7 +2114,7 @@ namespace TH_WEB.Migrations
 
                     b.HasIndex("ReviewId");
 
-                    b.ToTable("ReviewImage", (string)null);
+                    b.ToTable("ReviewImage");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.Room", b =>
@@ -986,7 +2258,7 @@ namespace TH_WEB.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("Rooms", (string)null);
+                    b.ToTable("Rooms");
 
                     b.HasData(
                         new
@@ -997,18 +2269,18 @@ namespace TH_WEB.Migrations
                             BedType = "King",
                             BreakfastPolicy = "Included",
                             CancellationPolicy = "Free cancellation within 24 hours.",
-                            ChildCapacity = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Spacious deluxe room with city view.",
-                            DiscountedPrice = 179.99m,
-                            Floor = "10",
+                            ChildCapacity = 0,
+                            CreatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(1974),
+                            Description = "A comfortable standard room with city view.",
+                            DiscountedPrice = 0m,
+                            Floor = "1",
                             HasAirConditioning = true,
                             HasBalcony = false,
                             HasBathtub = true,
                             HasCoffeemaker = true,
                             HasHairDryer = true,
                             HasIron = false,
-                            HasMinibar = true,
+                            HasMinibar = false,
                             HasPrivateBathroom = true,
                             HasRoomService = true,
                             HasSafe = true,
@@ -1021,13 +2293,13 @@ namespace TH_WEB.Migrations
                             IsAvailable = true,
                             IsFeatured = false,
                             IsNonSmoking = true,
-                            MainImageUrl = "/images/rooms/deluxe-king.jpg",
+                            MainImageUrl = "/images/rooms/standard-city.jpg",
                             MaxOccupancy = 2,
-                            Price = 199.99m,
+                            Price = 150.00m,
                             RoomNumber = "101",
-                            RoomType = "Deluxe",
-                            SquareMeters = 35,
-                            UpdatedAt = new DateTime(2024, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoomType = "Standard",
+                            SquareMeters = 30,
+                            UpdatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(1974),
                             ViewType = "City"
                         },
                         new
@@ -1036,13 +2308,13 @@ namespace TH_WEB.Migrations
                             AdultCapacity = 2,
                             BedCount = 2,
                             BedType = "Queen",
-                            BreakfastPolicy = "Available for fee",
-                            CancellationPolicy = "Non-refundable.",
+                            BreakfastPolicy = "Included",
+                            CancellationPolicy = "Free cancellation within 24 hours.",
                             ChildCapacity = 1,
-                            CreatedAt = new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Luxury suite with separate living area and city view.",
-                            DiscountedPrice = 269.99m,
-                            Floor = "20",
+                            CreatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(1980),
+                            Description = "Spacious deluxe room with ocean view.",
+                            DiscountedPrice = 0m,
+                            Floor = "10",
                             HasAirConditioning = true,
                             HasBalcony = true,
                             HasBathtub = true,
@@ -1060,40 +2332,40 @@ namespace TH_WEB.Migrations
                             HotelId = 1,
                             IsActive = true,
                             IsAvailable = true,
-                            IsFeatured = true,
+                            IsFeatured = false,
                             IsNonSmoking = true,
-                            MainImageUrl = "/images/rooms/executive-suite.jpg",
-                            MaxOccupancy = 2,
-                            Price = 299.99m,
-                            RoomNumber = "201",
-                            RoomType = "Suite",
-                            SquareMeters = 50,
-                            UpdatedAt = new DateTime(2024, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ViewType = "City"
+                            MainImageUrl = "/images/rooms/deluxe-ocean.jpg",
+                            MaxOccupancy = 3,
+                            Price = 200.00m,
+                            RoomNumber = "102",
+                            RoomType = "Deluxe",
+                            SquareMeters = 35,
+                            UpdatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(1981),
+                            ViewType = "Ocean"
                         },
                         new
                         {
                             Id = 3,
                             AdultCapacity = 2,
-                            BedCount = 2,
-                            BedType = "Twin",
-                            BreakfastPolicy = "Included",
+                            BedCount = 1,
+                            BedType = "King",
+                            BreakfastPolicy = "Available for fee",
                             CancellationPolicy = "Free cancellation within 48 hours.",
                             ChildCapacity = 2,
-                            CreatedAt = new DateTime(2024, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Comfortable room with two double beds.",
-                            DiscountedPrice = 139.99m,
+                            CreatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(1984),
+                            Description = "Luxury suite with separate living area.",
+                            DiscountedPrice = 0m,
                             Floor = "5",
                             HasAirConditioning = true,
                             HasBalcony = false,
-                            HasBathtub = false,
-                            HasCoffeemaker = false,
+                            HasBathtub = true,
+                            HasCoffeemaker = true,
                             HasHairDryer = true,
-                            HasIron = false,
-                            HasMinibar = false,
+                            HasIron = true,
+                            HasMinibar = true,
                             HasPrivateBathroom = true,
-                            HasRoomService = false,
-                            HasSafe = false,
+                            HasRoomService = true,
+                            HasSafe = true,
                             HasShower = true,
                             HasTV = true,
                             HasWifi = true,
@@ -1101,15 +2373,15 @@ namespace TH_WEB.Migrations
                             HotelId = 2,
                             IsActive = true,
                             IsAvailable = true,
-                            IsFeatured = false,
+                            IsFeatured = true,
                             IsNonSmoking = true,
-                            MainImageUrl = "/images/rooms/standard-double.jpg",
+                            MainImageUrl = "/images/rooms/suite-city.jpg",
                             MaxOccupancy = 4,
-                            Price = 149.99m,
-                            RoomNumber = "301",
-                            RoomType = "Standard",
-                            SquareMeters = 30,
-                            UpdatedAt = new DateTime(2024, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Price = 350.00m,
+                            RoomNumber = "501",
+                            RoomType = "Suite",
+                            SquareMeters = 50,
+                            UpdatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(1984),
                             ViewType = "City"
                         });
                 });
@@ -1149,7 +2421,7 @@ namespace TH_WEB.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("RoomAmenity", (string)null);
+                    b.ToTable("RoomAmenity");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.RoomImage", b =>
@@ -1188,7 +2460,247 @@ namespace TH_WEB.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("RoomImage", (string)null);
+                    b.ToTable("RoomImage");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.TravelPackage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<decimal>("AdultPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("CarRentalId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ChildPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DestinationCode")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("DiscountPercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("HotelId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IncludesBreakfast")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IncludesHotel")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IncludesInsurance")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IncludesMeals")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IncludesTours")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IncludesTransfers")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("InfantPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaxAdults")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxChildren")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxInfants")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Region")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarRentalId");
+
+                    b.HasIndex("HotelId");
+
+                    b.ToTable("TravelPackages");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("TH_WEB.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("TH_WEB.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TH_WEB.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("TH_WEB.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.AttractionFeature", b =>
+                {
+                    b.HasOne("TH_WEB.Areas.Attractions.Models.Attraction", "Attraction")
+                        .WithMany("Features")
+                        .HasForeignKey("AttractionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attraction");
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.AttractionImage", b =>
+                {
+                    b.HasOne("TH_WEB.Areas.Attractions.Models.Attraction", "Attraction")
+                        .WithMany("Images")
+                        .HasForeignKey("AttractionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attraction");
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.AttractionTag", b =>
+                {
+                    b.HasOne("TH_WEB.Areas.Attractions.Models.Attraction", "Attraction")
+                        .WithMany("Tags")
+                        .HasForeignKey("AttractionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attraction");
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.OperatingHours", b =>
+                {
+                    b.HasOne("TH_WEB.Areas.Attractions.Models.Attraction", "Attraction")
+                        .WithOne("OperatingHours")
+                        .HasForeignKey("TH_WEB.Areas.Attractions.Models.OperatingHours", "AttractionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attraction");
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.Pricing", b =>
+                {
+                    b.HasOne("TH_WEB.Areas.Attractions.Models.Attraction", "Attraction")
+                        .WithOne("Pricing")
+                        .HasForeignKey("TH_WEB.Areas.Attractions.Models.Pricing", "AttractionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attraction");
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.Review", b =>
+                {
+                    b.HasOne("TH_WEB.Areas.Attractions.Models.Attraction", "Attraction")
+                        .WithMany("Reviews")
+                        .HasForeignKey("AttractionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attraction");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.Booking", b =>
@@ -1196,13 +2708,12 @@ namespace TH_WEB.Migrations
                     b.HasOne("TH_WEB.Models.Hotel", "Hotel")
                         .WithMany("Bookings")
                         .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("TH_WEB.Models.Room", "Room")
                         .WithMany("Bookings")
                         .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Hotel");
@@ -1210,15 +2721,95 @@ namespace TH_WEB.Migrations
                     b.Navigation("Room");
                 });
 
-            modelBuilder.Entity("TH_WEB.Models.BookingAddon", b =>
+            modelBuilder.Entity("TH_WEB.Models.BookingAmenity", b =>
                 {
                     b.HasOne("TH_WEB.Models.Booking", "Booking")
-                        .WithMany("Addons")
+                        .WithMany("Amenities")
                         .HasForeignKey("BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.BookingService", b =>
+                {
+                    b.HasOne("TH_WEB.Models.Booking", "Booking")
+                        .WithMany("Services")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.CarRental", b =>
+                {
+                    b.HasOne("TH_WEB.Models.CarType", "CarType")
+                        .WithMany("CarRentals")
+                        .HasForeignKey("CarTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TH_WEB.Models.Location", "DropoffLocation")
+                        .WithMany("DropoffLocations")
+                        .HasForeignKey("DropoffLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TH_WEB.Models.Location", "Location")
+                        .WithMany("CarRentals")
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TH_WEB.Models.Location", "PickupLocation")
+                        .WithMany("PickupLocations")
+                        .HasForeignKey("PickupLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TH_WEB.Models.RentalLocation", null)
+                        .WithMany("DropoffRentals")
+                        .HasForeignKey("RentalLocationId");
+
+                    b.HasOne("TH_WEB.Models.RentalLocation", null)
+                        .WithMany("PickupRentals")
+                        .HasForeignKey("RentalLocationId1");
+
+                    b.Navigation("CarType");
+
+                    b.Navigation("DropoffLocation");
+
+                    b.Navigation("Location");
+
+                    b.Navigation("PickupLocation");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.CarRentalBooking", b =>
+                {
+                    b.HasOne("TH_WEB.Models.CarRental", "CarRental")
+                        .WithMany("CarRentalBookings")
+                        .HasForeignKey("CarRentalId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CarRental");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.CarRentalExtra", b =>
+                {
+                    b.HasOne("TH_WEB.Models.CarRentalBooking", "CarRentalBooking")
+                        .WithMany("Extras")
+                        .HasForeignKey("CarRentalBookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TH_WEB.Models.CarRental", null)
+                        .WithMany("Extras")
+                        .HasForeignKey("CarRentalId");
+
+                    b.Navigation("CarRentalBooking");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.HotelFacility", b =>
@@ -1235,7 +2826,7 @@ namespace TH_WEB.Migrations
             modelBuilder.Entity("TH_WEB.Models.HotelImage", b =>
                 {
                     b.HasOne("TH_WEB.Models.Hotel", "Hotel")
-                        .WithMany("HotelImages")
+                        .WithMany("Images")
                         .HasForeignKey("HotelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1247,28 +2838,76 @@ namespace TH_WEB.Migrations
                 {
                     b.HasOne("TH_WEB.Models.Hotel", "Hotel")
                         .WithMany("Offers")
-                        .HasForeignKey("HotelId")
+                        .HasForeignKey("HotelId");
+
+                    b.Navigation("Hotel");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.PackageBooking", b =>
+                {
+                    b.HasOne("TH_WEB.Models.TravelPackage", "TravelPackage")
+                        .WithMany("Bookings")
+                        .HasForeignKey("PackageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Hotel");
+                    b.Navigation("TravelPackage");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.PackageExtra", b =>
+                {
+                    b.HasOne("TH_WEB.Models.TravelPackage", "Package")
+                        .WithMany("Extras")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Package");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.PackageFAQ", b =>
+                {
+                    b.HasOne("TH_WEB.Models.TravelPackage", "Package")
+                        .WithMany("FAQs")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Package");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.PackageItinerary", b =>
+                {
+                    b.HasOne("TH_WEB.Models.TravelPackage", "Package")
+                        .WithMany("Itinerary")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Package");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.Review", b =>
                 {
                     b.HasOne("TH_WEB.Models.Booking", "Booking")
-                        .WithMany()
+                        .WithMany("Reviews")
                         .HasForeignKey("BookingId");
 
                     b.HasOne("TH_WEB.Models.Hotel", "Hotel")
                         .WithMany("Reviews")
                         .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("TH_WEB.Models.TravelPackage", "TravelPackage")
+                        .WithMany("Reviews")
+                        .HasForeignKey("TravelPackageId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Booking");
 
                     b.Navigation("Hotel");
+
+                    b.Navigation("TravelPackage");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.ReviewImage", b =>
@@ -1315,9 +2954,64 @@ namespace TH_WEB.Migrations
                     b.Navigation("Room");
                 });
 
+            modelBuilder.Entity("TH_WEB.Models.TravelPackage", b =>
+                {
+                    b.HasOne("TH_WEB.Models.CarRental", "CarRental")
+                        .WithMany()
+                        .HasForeignKey("CarRentalId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TH_WEB.Models.Hotel", "Hotel")
+                        .WithMany()
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CarRental");
+
+                    b.Navigation("Hotel");
+                });
+
+            modelBuilder.Entity("TH_WEB.Areas.Attractions.Models.Attraction", b =>
+                {
+                    b.Navigation("Features");
+
+                    b.Navigation("Images");
+
+                    b.Navigation("OperatingHours")
+                        .IsRequired();
+
+                    b.Navigation("Pricing")
+                        .IsRequired();
+
+                    b.Navigation("Reviews");
+
+                    b.Navigation("Tags");
+                });
+
             modelBuilder.Entity("TH_WEB.Models.Booking", b =>
                 {
-                    b.Navigation("Addons");
+                    b.Navigation("Amenities");
+
+                    b.Navigation("Reviews");
+
+                    b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.CarRental", b =>
+                {
+                    b.Navigation("CarRentalBookings");
+
+                    b.Navigation("Extras");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.CarRentalBooking", b =>
+                {
+                    b.Navigation("Extras");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.CarType", b =>
+                {
+                    b.Navigation("CarRentals");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.Hotel", b =>
@@ -1326,13 +3020,29 @@ namespace TH_WEB.Migrations
 
                     b.Navigation("Facilities");
 
-                    b.Navigation("HotelImages");
+                    b.Navigation("Images");
 
                     b.Navigation("Offers");
 
                     b.Navigation("Reviews");
 
                     b.Navigation("Rooms");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Location", b =>
+                {
+                    b.Navigation("CarRentals");
+
+                    b.Navigation("DropoffLocations");
+
+                    b.Navigation("PickupLocations");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.RentalLocation", b =>
+                {
+                    b.Navigation("DropoffRentals");
+
+                    b.Navigation("PickupRentals");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.Review", b =>
@@ -1347,6 +3057,19 @@ namespace TH_WEB.Migrations
                     b.Navigation("Bookings");
 
                     b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.TravelPackage", b =>
+                {
+                    b.Navigation("Bookings");
+
+                    b.Navigation("Extras");
+
+                    b.Navigation("FAQs");
+
+                    b.Navigation("Itinerary");
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

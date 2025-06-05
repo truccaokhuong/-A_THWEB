@@ -4,6 +4,7 @@
     ViewData["Title"] = "Book Your Stay";
     var room = ViewBag.Room;
     var nights = ViewBag.Nights;
+    var totalGuests = Model.NumberOfAdults + Model.NumberOfChildren;
 }
 
 <div class="container">
@@ -49,9 +50,28 @@
                         <input type="hidden" asp-for="RoomId" />
                         <input type="hidden" asp-for="CheckInDate" />
                         <input type="hidden" asp-for="CheckOutDate" />
-                        <input type="hidden" asp-for="NumberOfGuests" />
-                        <input type="hidden" asp-for="NumberOfRooms" />
+                        <input type="hidden" asp-for="NumberOfAdults" />
+                        <input type="hidden" asp-for="NumberOfChildren" />
+                        <input type="hidden" asp-for="NumberOfInfants" />
                         <input type="hidden" asp-for="TotalPrice" />
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="NumberOfAdults" class="form-label">Adults</label>
+                                <input asp-for="NumberOfAdults" type="number" class="form-control" min="1" required />
+                                <span asp-validation-for="NumberOfAdults" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="NumberOfChildren" class="form-label">Children (0-12)</label>
+                                <input asp-for="NumberOfChildren" type="number" class="form-control" min="0" />
+                                <span asp-validation-for="NumberOfChildren" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="NumberOfInfants" class="form-label">Infants (under 2)</label>
+                                <input asp-for="NumberOfInfants" type="number" class="form-control" min="0" />
+                                <span asp-validation-for="NumberOfInfants" class="text-danger"></span>
+                            </div>
+                        </div>
                         
                         <div class="row mt-3">
                             <div class="col-md-6 mb-3">
@@ -101,23 +121,23 @@
                     <div class="d-flex justify-content-between mb-3">
                         <div>
                             <div class="fw-bold">@room.Name</div>
-                            <div class="text-muted">@nights @(nights == 1 ? "night" : "nights"), @Model.NumberOfGuests @(Model.NumberOfGuests == 1 ? "guest" : "guests")</div>
+                            <div class="text-muted">@nights @(nights == 1 ? "night" : "nights"), @totalGuests @(totalGuests == 1 ? "guest" : "guests")</div>
                         </div>
                         <div class="text-end">
-                            <div class="fw-bold">$@(room.PricePerNight * nights)</div>
+                            <div class="fw-bold">$@(room.Price * nights)</div>
                         </div>
                     </div>
                     
                     <div class="d-flex justify-content-between mb-2">
                         <div>Taxes and fees (15%)</div>
-                        <div>$@(room.PricePerNight * nights * 0.15m)</div>
+                        <div>$@(room.Price * nights * 0.15m)</div>
                     </div>
                     
                     <hr>
                     
                     <div class="d-flex justify-content-between fw-bold fs-5">
                         <div>Total</div>
-                        <div>$@(room.PricePerNight * nights * 1.15m)</div>
+                        <div>$@(room.Price * nights * 1.15m)</div>
                     </div>
                     
                     <div class="alert alert-success mt-3">
@@ -131,13 +151,9 @@
                 <div class="card-body">
                     <h5>@room.Hotel.Name</h5>
                     <div class="d-flex mb-2">
-                        @for (int i = 0; i < Math.Floor(room.Hotel.Rating); i++)
+                        @for (int i = 0; i < room.Hotel.StarRating; i++)
                         {
                             <i class="fas fa-star text-warning"></i>
-                        }
-                        @if (room.Hotel.Rating % 1 != 0)
-                        {
-                            <i class="fas fa-star-half-alt text-warning"></i>
                         }
                     </div>
                     <p>
