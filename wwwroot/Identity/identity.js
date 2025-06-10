@@ -168,9 +168,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const originalBtnText = submitBtn.textContent;
         submitBtn.textContent = 'Signing in...';
         submitBtn.disabled = true;
-        
-        try {
-            const response = await fetch('/Identity/Account/Login', {
+          try {
+            const response = await fetch('/Identity/Account/LoginJson', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -315,9 +314,8 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         const originalBtnText = submitBtn.textContent;
         submitBtn.textContent = 'Creating account...';
         submitBtn.disabled = true;
-        
-        try {
-            const response = await fetch('/Identity/Account/Register', {
+          try {
+            const response = await fetch('/Identity/Account/RegisterJson', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -325,16 +323,18 @@ document.getElementById('registerForm').addEventListener('submit', async functio
                 body: JSON.stringify({ email, firstName, lastName, password, agreeTerms, newsletter })
             });
             
-            const responseData = await response.json();
-
-            if (response.ok) {
-                // Show success message and potentially redirect or switch tab
-                showGeneralSuccess('registerForm', 'Registration successful! You can now sign in.');
-                // Optionally clear the form after success
-                // this.reset(); 
-                // Optionally switch to login tab after success
-                // switchTab('signin');
-            } else {
+            const responseData = await response.json();            if (response.ok) {
+                // Show success message
+                showGeneralSuccess('registerForm', responseData.message || 'Registration successful!');
+                
+                // Clear the form
+                this.reset();
+                
+                // Redirect to home page or intended URL after a short delay
+                setTimeout(() => {
+                    window.location.href = responseData.redirectUrl || '/';
+                }, 1500);
+            }else {
                  if (responseData.errors) {
                     // Display specific errors from the server
                     for (const key in responseData.errors) {
@@ -485,23 +485,12 @@ document.getElementById('forgotPasswordForm').addEventListener('submit', async f
     }
 });
 
-// Social login handlers
-document.querySelectorAll('.btn-google').forEach(btn => {
-    btn.addEventListener('click', () => {
-        // Placeholder for Google OAuth initiation
-        console.log('Initiating Google OAuth process...');
-        // Redirect or call backend endpoint
-        // window.location.href = '/Identity/Account/ExternalLogin?provider=Google'; // Example redirect
-        alert('Google OAuth integration coming soon.'); // Keep alert for demo clarity
-    });
-});
+// Social login handlers - Google OAuth is now handled by forms in the view
+// Remove the event listeners that were overriding the Google OAuth buttons
 
+// Keep Facebook coming soon alert
 document.querySelectorAll('.btn-facebook').forEach(btn => {
     btn.addEventListener('click', () => {
-        // Placeholder for Facebook OAuth initiation
-        console.log('Initiating Facebook OAuth process...');
-        // Redirect or call backend endpoint
-        // window.location.href = '/Identity/Account/ExternalLogin?provider=Facebook'; // Example redirect
-        alert('Facebook OAuth integration coming soon.'); // Keep alert for demo clarity
+        alert('Facebook OAuth integration coming soon.');
     });
-}); 
+});

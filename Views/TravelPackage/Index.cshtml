@@ -2,42 +2,586 @@
 
 @{
     ViewData["Title"] = "Travel Packages";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style>
+    .packages-hero {
+        background: linear-gradient(135deg, #003580 0%, #0071c2 100%);
+        color: white;
+        padding: 80px 0;
+        margin-bottom: 40px;
+    }
+    
+    .search-box {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+        margin-top: -60px;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .package-card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: white;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        position: relative;
+    }
+    
+    .package-card:hover {
+        box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+        transform: translateY(-4px);
+    }
+    
+    .package-image {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+        background: linear-gradient(45deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    .package-image-placeholder {
+        width: 100%;
+        height: 240px;
+        background: linear-gradient(45deg, #f8f9fa 0%, #e9ecef 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        font-size: 48px;
+    }
+    
+    .price-badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: #003580;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .featured-badge {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: linear-gradient(45deg, #ff6b35, #f7931e);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+    
+    .package-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 12px 0;
+    }
+    
+    .feature-tag {
+        background: #e7f3ff;
+        color: #003580;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        display: inline-block;
+    }
+    
+    .destination-info {
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .duration-badge {
+        background: #f0f9ff;
+        color: #0369a1;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        display: inline-block;
+        margin-right: 8px;
+    }
+    
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .status-active {
+        background: #e6f7ed;
+        color: #047857;
+    }
+    
+    .status-inactive {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+    
+    .btn-view {
+        background: #003580;
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-view:hover {
+        background: #002855;
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .btn-edit {
+        background: #f59e0b;
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-edit:hover {
+        background: #d97706;
+        color: white;
+    }
+    
+    .btn-delete {
+        background: #dc2626;
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-delete:hover {
+        background: #b91c1c;
+        color: white;
+    }
+    
+    .btn-create {
+        background: #16a34a;
+        border: none;
+        color: white;
+        padding: 14px 28px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 16px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin-bottom: 24px;
+    }
+    
+    .btn-create:hover {
+        background: #15803d;
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .filter-sidebar {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #003580;
+        box-shadow: 0 0 0 0.2rem rgba(0, 53, 128, 0.25);
+    }
+    
+    .discount-tag {
+        background: linear-gradient(45deg, #dc2626, #ef4444);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .original-price {
+        text-decoration: line-through;
+        color: #6c757d;
+        font-size: 14px;
+        margin-right: 8px;
+    }
+    
+    .card-footer-custom {
+        background: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+        padding: 16px 20px;
+    }
+    
+    .packages-stats {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 32px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 16px;
+    }
+    
+    .stat-number {
+        font-size: 28px;
+        font-weight: 700;
+        color: #003580;
+        display: block;
+    }
+    
+    .stat-label {
+        color: #6c757d;
+        font-size: 14px;
+        margin-top: 4px;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="packages-hero">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 mb-3">Discover Amazing Travel Packages</h1>
+                <p class="lead opacity-90">Explore handcrafted travel experiences designed to create unforgettable memories</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter Section -->
 <div class="container">
-    <h1>Travel Packages</h1>
+    <div class="search-box">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">
+                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                    Destination
+                </label>
+                <select class="form-select">
+                    <option value="">Any Destination</option>
+                    <option value="miami">Miami, USA</option>
+                    <option value="newyork">New York, USA</option>
+                    <option value="paris">Paris, France</option>
+                    <option value="tokyo">Tokyo, Japan</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">
+                    <i class="fas fa-calendar text-primary me-2"></i>
+                    Duration
+                </label>
+                <select class="form-select">
+                    <option value="">Any Duration</option>
+                    <option value="1-3">1-3 Days</option>
+                    <option value="4-7">4-7 Days</option>
+                    <option value="8-14">8-14 Days</option>
+                    <option value="15+">15+ Days</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">
+                    <i class="fas fa-dollar-sign text-primary me-2"></i>
+                    Price Range
+                </label>
+                <select class="form-select">
+                    <option value="">Any Price</option>
+                    <option value="0-500">$0 - $500</option>
+                    <option value="500-1000">$500 - $1,000</option>
+                    <option value="1000-2000">$1,000 - $2,000</option>
+                    <option value="2000+">$2,000+</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">
+                    <i class="fas fa-users text-primary me-2"></i>
+                    Group Size
+                </label>
+                <select class="form-select">
+                    <option value="">Any Size</option>
+                    <option value="1-2">1-2 People</option>
+                    <option value="3-4">3-4 People</option>
+                    <option value="5-6">5-6 People</option>
+                    <option value="7+">7+ People</option>
+                </select>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <button type="button" class="btn btn-view btn-lg">
+                    <i class="fas fa-search me-2"></i>
+                    Search Packages
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Create New</a>
-    </p>
+<div class="container mt-5">
+    <!-- Stats Section -->
+    <div class="packages-stats">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number">@Model.Count()</span>
+                    <div class="stat-label">Total Packages</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number">@Model.Count(p => p.IsFeatured)</span>
+                    <div class="stat-label">Featured</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number">@Model.Count(p => p.IsActive)</span>
+                    <div class="stat-label">Active</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number">@Model.Count(p => p.DiscountPercentage > 0)</span>
+                    <div class="stat-label">On Sale</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Create New Button and Sort Options -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a asp-action="Create" class="btn-create">
+                <i class="fas fa-plus me-2"></i>
+                Create New Package
+            </a>
+        </div>
+        <div class="d-flex align-items-center">
+            <label class="form-label me-2 mb-0">Sort by:</label>
+            <select class="form-select" style="width: auto;">
+                <option value="name">Name</option>
+                <option value="price-low">Price (Low to High)</option>
+                <option value="price-high">Price (High to Low)</option>
+                <option value="duration">Duration</option>
+                <option value="featured">Featured First</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Packages Grid -->
     <div class="row">
-        @foreach (var item in Model)
+        @if (Model.Any())
         {
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    @if (!string.IsNullOrEmpty(item.ImageUrl))
-                    {
-                        <img src="@item.ImageUrl" class="card-img-top" alt="@item.Title">
-                    }
-                    <div class="card-body">
-                        <h5 class="card-title">@item.Title</h5>
-                        <p class="card-text">@item.Description</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                Destination: @item.Destination<br />
-                                Duration: @item.Duration days<br />
-                                Price: $@item.FinalPrice
-                            </small>
-                        </p>
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+            @foreach (var package in Model)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="package-card">
+                        <!-- Package Image -->
+                        @if (!string.IsNullOrEmpty(package.ImageUrl))
+                        {
+                            <img src="@package.ImageUrl" class="package-image" alt="@package.Name">
+                        }
+                        else
+                        {
+                            <div class="package-image-placeholder">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        }
+                        
+                        <!-- Featured Badge -->
+                        @if (package.IsFeatured)
+                        {
+                            <div class="featured-badge">
+                                <i class="fas fa-star me-1"></i>Featured
+                            </div>
+                        }
+                        
+                        <!-- Price Badge -->
+                        <div class="price-badge">
+                            @if (package.DiscountPercentage > 0)
+                            {
+                                <span class="original-price">$@package.TotalPrice.ToString("N0")</span>
+                                <span>$@package.FinalPrice.ToString("N0")</span>
+                                <span class="discount-tag">-@package.DiscountPercentage.ToString("N0")%</span>
+                            }
+                            else
+                            {
+                                <span>$@package.TotalPrice.ToString("N0")</span>
+                            }
+                        </div>
+                        
+                        <!-- Package Content -->
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-2">@package.Name</h5>
+                            <div class="destination-info mb-2">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                @package.Destination
+                            </div>
+                            <p class="card-text text-muted mb-3">@package.Description</p>
+                            
+                            <!-- Duration and Group Size -->
+                            <div class="mb-3">
+                                <span class="duration-badge">
+                                    <i class="fas fa-calendar-day me-1"></i>
+                                    @package.Duration days
+                                </span>
+                                <span class="duration-badge">
+                                    <i class="fas fa-users me-1"></i>
+                                    Up to @package.MaxAdults adults
+                                </span>
+                            </div>
+                            
+                            <!-- Package Features -->
+                            <div class="package-features">
+                                @if (package.IncludesHotel)
+                                {
+                                    <span class="feature-tag">
+                                        <i class="fas fa-bed me-1"></i>Hotel
+                                    </span>
+                                }
+                                @if (package.IncludesBreakfast)
+                                {
+                                    <span class="feature-tag">
+                                        <i class="fas fa-coffee me-1"></i>Breakfast
+                                    </span>
+                                }
+                                @if (package.IncludesMeals)
+                                {
+                                    <span class="feature-tag">
+                                        <i class="fas fa-utensils me-1"></i>Meals
+                                    </span>
+                                }
+                                @if (package.IncludesTransfers)
+                                {
+                                    <span class="feature-tag">
+                                        <i class="fas fa-shuttle-van me-1"></i>Transfers
+                                    </span>
+                                }
+                                @if (package.IncludesTours)
+                                {
+                                    <span class="feature-tag">
+                                        <i class="fas fa-binoculars me-1"></i>Tours
+                                    </span>
+                                }
+                                @if (package.IncludesInsurance)
+                                {
+                                    <span class="feature-tag">
+                                        <i class="fas fa-shield-alt me-1"></i>Insurance
+                                    </span>
+                                }
+                            </div>
+                            
+                            <!-- Status -->
+                            <div class="mb-3">
+                                <span class="status-badge @(package.IsActive ? "status-active" : "status-inactive")">
+                                    @(package.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a asp-action="Details" asp-route-id="@package.Id" class="btn-view">
+                                    <i class="fas fa-eye me-2"></i>View Details
+                                </a>
+                                <div>
+                                    <a asp-action="Edit" asp-route-id="@package.Id" class="btn-edit me-2">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@package.Id" class="btn-delete" 
+                                       onclick="return confirm('Are you sure you want to delete this package?')">
+                                        <i class="fas fa-trash me-1"></i>Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Package Footer -->
+                        <div class="card-footer-custom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    @package.StartDate.ToString("MMM dd") - @package.EndDate.ToString("MMM dd, yyyy")
+                                </small>
+                                <small class="text-muted">
+                                    Priority: @package.Priority
+                                </small>
+                            </div>
                         </div>
                     </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-suitcase-rolling fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Travel Packages Found</h4>
+                    <p class="text-muted">Start by creating your first travel package to offer amazing experiences to your customers.</p>
+                    <a asp-action="Create" class="btn-create mt-3">
+                        <i class="fas fa-plus me-2"></i>
+                        Create Your First Package
+                    </a>
                 </div>
             </div>
         }
     </div>
-</div> 
+</div>
+
+@section Scripts {
+    <script>
+        // Filter and search functionality
+        $(document).ready(function() {
+            // Add search and filter logic here
+            $('.form-select').on('change', function() {
+                // Filter packages based on selected criteria
+                console.log('Filter changed:', $(this).val());
+            });
+            
+            // Add smooth scrolling and animations
+            $('.package-card').hover(
+                function() {
+                    $(this).addClass('shadow-lg');
+                },
+                function() {
+                    $(this).removeClass('shadow-lg');
+                }
+            );
+        });
+    </script>
+}

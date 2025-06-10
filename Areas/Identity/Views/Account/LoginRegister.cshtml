@@ -39,16 +39,34 @@
                                 <div class="auth-body">
                                     <h1>Welcome back</h1>
                                     <p class="text-muted mb-4">Sign in to your EzBooking account</p>
-                                    
-                                    <!-- Social Login -->
+                                      <!-- Social Login -->
                                     <div class="social-login">
-                                        <button class="btn-google">
-                                            <i class="fab fa-google"></i>
-                                            Continue with Google
-                                        </button>
-                                        <button class="btn-facebook">
+                                        @if (ViewBag.ExternalLogins?.Count > 0)
+                                        {
+                                            <form asp-controller="ExternalLogin" asp-action="ExternalLogin" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                                                @foreach (var provider in ViewBag.ExternalLogins)
+                                                {
+                                                    @if (provider.Name == "Google")
+                                                    {
+                                                        <button type="submit" class="btn-google" name="provider" value="@provider.Name">
+                                                            <i class="fab fa-google"></i>
+                                                            Continue with Google
+                                                        </button>
+                                                    }
+                                                }
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn-google" disabled>
+                                                <i class="fab fa-google"></i>
+                                                Google Login (Not Configured)
+                                            </button>
+                                        }
+                                        
+                                        <button class="btn-facebook" disabled>
                                             <i class="fab fa-facebook-f"></i>
-                                            Continue with Facebook
+                                            Facebook (Coming Soon)
                                         </button>
                                     </div>
                                     
@@ -105,17 +123,32 @@
                                         <li>Faster booking for next time</li>
                                         <li>Track your reservations</li>
                                         <li>Get secret deals and discounts</li>
-                                    </ul>
-                                    
-                                    <!-- Social Login -->
-                                    <div class="social-login">
-                                        <button class="btn-google">
-                                            <i class="fab fa-google"></i>
-                                            Sign up with Google
-                                        </button>
-                                        <button class="btn-facebook">
+                                    </ul>                                      <!-- Social Login -->                                    <div class="social-login">
+                                        @if (ViewBag.ExternalLogins?.Count > 0)
+                                        {
+                                            <form asp-controller="ExternalLogin" asp-action="ExternalLogin" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                                                @foreach (var provider in ViewBag.ExternalLogins)
+                                                {
+                                                    @if (provider.Name == "Google")
+                                                    {
+                                                        <button type="submit" class="btn-google" name="provider" value="@provider.Name">
+                                                            <i class="fab fa-google"></i>
+                                                            Sign up with Google
+                                                        </button>
+                                                    }
+                                                }
+                                            </form>
+                                        }                                        else
+                                        {
+                                            <button class="btn-google" disabled>
+                                                <i class="fab fa-google"></i>
+                                                Google Sign up (Not Configured)
+                                            </button>
+                                        }
+                                        
+                                        <button class="btn-facebook" disabled>
                                             <i class="fab fa-facebook-f"></i>
-                                            Sign up with Facebook
+                                            Facebook (Coming Soon)
                                         </button>
                                     </div>
                                     

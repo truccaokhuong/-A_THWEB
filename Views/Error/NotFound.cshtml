@@ -1,0 +1,76 @@
+@{
+    ViewData["Title"] = "Page Not Found";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .error-container {
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+    
+    .error-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        padding: 3rem;
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+        margin: 2rem;
+    }
+    
+    .error-icon {
+        font-size: 6rem;
+        color: #ffc107;
+        margin-bottom: 1.5rem;
+        animation: bounce 2s infinite;
+    }
+    
+    @@keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
+    }
+    
+    .error-title {
+        color: #343a40;
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .error-message {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+</style>
+
+<div class="error-container">
+    <div class="error-card">
+        <div class="error-icon">
+            <i class="fas fa-search"></i>
+        </div>
+        
+        <h1 class="error-title">404</h1>
+        
+        <p class="error-message">
+            Oops! The page you're looking for doesn't exist or has been moved.
+        </p>
+        
+        <div class="access-denied-actions">
+            <a href="@Url.Action("Index", "Home")" class="btn btn-home">
+                <i class="fas fa-home me-2"></i>Go Home
+            </a>
+            
+            <a href="javascript:history.back()" class="btn btn-back">
+                <i class="fas fa-arrow-left me-2"></i>Go Back
+            </a>
+        </div>
+    </div>
+</div>

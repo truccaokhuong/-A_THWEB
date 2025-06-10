@@ -19,11 +19,9 @@ namespace TH_WEB.Areas.Attractions.Controllers
             IAttractionsRepository attractionsRepository)
         {
             _attractionsRepository = attractionsRepository;
-        }
-
-        // GET: api/attractions
+        }        // GET: api/attractions
         [HttpGet]
-        public async Task<IActionResult> GetAttractions([FromQuery] AttractionsSearchViewModel searchModel = null)
+        public async Task<IActionResult> GetAttractions([FromQuery] AttractionsSearchViewModel? searchModel = null)
         {
             try
             {

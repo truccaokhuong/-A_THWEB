@@ -14,14 +14,13 @@ namespace TH_WEB.Services
         public RoomService(ApplicationDbContext context)
         {
             _context = context;
-        }
-
-        public async Task<IEnumerable<Room>> GetAvailableRoomsAsync()
+        }        public async Task<IEnumerable<Room>> GetAvailableRoomsAsync()
         {
             return await _context.Rooms
                 .Where(r => r.IsAvailable)
                 .Include(r => r.Hotel)
                 .OrderByDescending(r => r.Hotel.StarRating)
+                .ThenBy(r => r.PricePerNight)
                 .Take(12)
                 .ToListAsync();
         }

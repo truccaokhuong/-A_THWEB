@@ -1,0 +1,244 @@
+@{
+    ViewData["Title"] = "Database Seeding";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Database Seeding</h1>
+        <div class="d-none d-sm-inline-block">
+            <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-sm btn-primary shadow-sm">
+                <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Admin
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <!-- Seeding Actions -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Database Seeding Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-left-success">
+                                <div class="card-body">
+                                    <h5 class="card-title text-success">
+                                        <i class="fas fa-users"></i> Seed Test Accounts
+                                    </h5>
+                                    <p class="card-text">
+                                        Create all test accounts for different roles (17 accounts total).
+                                        This includes managers, staff, customers, and special roles.
+                                    </p>
+                                    <form method="post" action="@Url.Action("SeedTestAccounts")">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-success" 
+                                                onclick="return confirm('Are you sure you want to seed test accounts?')">
+                                            <i class="fas fa-user-plus"></i> Seed Test Accounts
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card border-left-warning">
+                                <div class="card-body">
+                                    <h5 class="card-title text-warning">
+                                        <i class="fas fa-database"></i> Seed All Data
+                                    </h5>
+                                    <p class="card-text">
+                                        Run complete database seeding including roles, permissions, 
+                                        and all test accounts. Use this for fresh database setup.
+                                    </p>
+                                    <form method="post" action="@Url.Action("SeedAll")">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-warning" 
+                                                onclick="return confirm('This will seed all data. Continue?')">
+                                            <i class="fas fa-cogs"></i> Seed All Data
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Accounts List -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Test Accounts Status</h6>
+                    <a href="@Url.Action("TestAccountsList")" class="btn btn-sm btn-info">
+                        <i class="fas fa-list"></i> View Detailed List
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Role Category</th>
+                                    <th>Email</th>
+                                    <th>Password</th>
+                                    <th>Role</th>
+                                    <th>Purpose</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table-danger">
+                                    <td rowspan="2"><strong>System</strong></td>
+                                    <td>admin@thweb.com</td>
+                                    <td>Admin@123</td>
+                                    <td>SuperAdmin</td>
+                                    <td>Full system access</td>
+                                </tr>
+                                <tr class="table-danger">
+                                    <td>admin2@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>Admin</td>
+                                    <td>Administrative access</td>
+                                </tr>
+                                
+                                <tr class="table-primary">
+                                    <td rowspan="4"><strong>Managers</strong></td>
+                                    <td>hotelmanager@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>HotelManager</td>
+                                    <td>Hotel operations</td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <td>attractionmanager@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>AttractionManager</td>
+                                    <td>Attraction management</td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <td>carmanager@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>CarRentalManager</td>
+                                    <td>Car rental operations</td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <td>travelmanager@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>TravelPackageManager</td>
+                                    <td>Travel packages</td>
+                                </tr>
+                                
+                                <tr class="table-success">
+                                    <td rowspan="4"><strong>Staff</strong></td>
+                                    <td>hotelstaff@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>HotelStaff</td>
+                                    <td>Hotel daily operations</td>
+                                </tr>
+                                <tr class="table-success">
+                                    <td>attractionstaff@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>AttractionStaff</td>
+                                    <td>Attraction staff</td>
+                                </tr>
+                                <tr class="table-success">
+                                    <td>carstaff@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>CarRentalStaff</td>
+                                    <td>Car rental staff</td>
+                                </tr>
+                                <tr class="table-success">
+                                    <td>customerservice@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>CustomerService</td>
+                                    <td>Customer support</td>
+                                </tr>
+                                
+                                <tr class="table-info">
+                                    <td rowspan="3"><strong>Owners</strong></td>
+                                    <td>hotelowner@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>HotelOwner</td>
+                                    <td>Hotel ownership</td>
+                                </tr>
+                                <tr class="table-info">
+                                    <td>attractionowner@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>AttractionOwner</td>
+                                    <td>Attraction ownership</td>
+                                </tr>
+                                <tr class="table-info">
+                                    <td>carowner@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>CarRentalOwner</td>
+                                    <td>Car rental ownership</td>
+                                </tr>
+                                
+                                <tr class="table-warning">
+                                    <td rowspan="2"><strong>Customers</strong></td>
+                                    <td>customer@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>Customer</td>
+                                    <td>Regular customer</td>
+                                </tr>
+                                <tr class="table-warning">
+                                    <td>premium@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>PremiumCustomer</td>
+                                    <td>VIP customer</td>
+                                </tr>
+                                
+                                <tr class="table-secondary">
+                                    <td rowspan="2"><strong>Special</strong></td>
+                                    <td>moderator@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>Moderator</td>
+                                    <td>Content moderation</td>
+                                </tr>
+                                <tr class="table-secondary">
+                                    <td>creator@test.com</td>
+                                    <td>Test@123</td>
+                                    <td>ContentCreator</td>
+                                    <td>Content creation</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    </script>
+}

@@ -51,12 +51,20 @@ function addLoadingStates() {
   // Add loading state to navigation buttons
   $('.nav-link, .btn').not('.no-loading').on('click', function(e) {
       const $this = $(this);
-      if ($this.hasClass('dropdown-toggle') || $this.attr('href') === '#' || $this.attr('href') === 'javascript:void(0)') {
+      
+      // Skip if it's a dropdown, hash link, javascript void, or has no-loading class
+      if ($this.hasClass('dropdown-toggle') || 
+          $this.hasClass('no-loading') ||
+          $this.attr('href') === '#' || 
+          $this.attr('href') === 'javascript:void(0)' ||
+          $this.attr('data-toggle') === 'modal' ||
+          $this.attr('data-dismiss') === 'modal') {
           return;
       }
       
-      // Add loading indicator for page transitions
-      if (!$this.hasClass('btn-search')) {
+      // Only show loading for actual page navigation
+      const href = $this.attr('href');
+      if (href && href.length > 1 && !href.startsWith('#') && !href.startsWith('javascript:')) {
           showLoadingOverlay();
       }
   });
@@ -110,7 +118,10 @@ function showLoadingOverlay() {
 
 // Hide loading overlay
 function hideLoadingOverlay() {
-  $('#loading-overlay').hide();
+  $('#loading-overlay').hide().remove();
+  $('.loading-spinner').remove();
+  // Also remove any stuck loading overlays with different IDs
+  $('[id*="loading"], [class*="loading-overlay"]').remove();
 }
 
 // Show toast notification
@@ -345,11 +356,27 @@ window.EzBooking = {
 };
 
 // Hide loading overlay when page is fully loaded
-$(window).on('load', function() {
+$(document).ready(function() {
+  // Immediately hide any existing loading overlays
   hideLoadingOverlay();
+  $('#loading-overlay').remove();
+  $('.loading-spinner').remove();
 });
 
-// Handle page unload
-$(window).on('beforeunload', function() {
-  showLoadingOverlay();
+$(window).on('load', function() {
+  // Double check - hide loading overlay when page is fully loaded
+  hideLoadingOverlay();
+  $('#loading-overlay').remove();
+  $('.loading-spinner').remove();
+});
+
+// Handle page unload - only for actual navigation, not for modal/popup actions
+$(window).on('beforeunload', function(e) {
+  // Only show loading if we're actually navigating away
+  // Don't show for modal actions, AJAX calls, etc.
+  if (!e.target.activeElement || 
+      !e.target.activeElement.hasAttribute('data-toggle') &&
+      !e.target.activeElement.hasAttribute('data-dismiss')) {
+      showLoadingOverlay();
+  }
 });

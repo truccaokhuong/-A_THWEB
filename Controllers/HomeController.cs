@@ -52,10 +52,9 @@ namespace TH_WEB.Controllers
                 .Include(b => b.Room)
                 .OrderByDescending(b => b.CreatedAt)
                 .Take(5)
-                .ToListAsync();
-
-            var activeOffers = await _context.Offers
+                .ToListAsync();            var activeOffers = await _context.Offers
                 .Where(o => o.StartDate <= DateTime.Now && o.EndDate >= DateTime.Now && o.IsActive)
+                .OrderByDescending(o => o.DiscountPercentage)
                 .Take(3)
                 .ToListAsync();
 
@@ -117,9 +116,7 @@ namespace TH_WEB.Controllers
             if (string.IsNullOrEmpty(term))
             {
                 return Json(new List<object>());
-            }
-
-            var destinations = _context.Hotels
+            }            var destinations = _context.Hotels
                 .Where(h => h.City.Contains(term) || h.Name.Contains(term))
                 .Select(h => new { 
                     label = $"{h.City}, {h.Country}", 
@@ -127,6 +124,7 @@ namespace TH_WEB.Controllers
                     hotelCount = _context.Hotels.Count(x => x.City == h.City)
                 })
                 .Distinct()
+                .OrderBy(h => h.label)
                 .Take(10)
                 .ToList();
 

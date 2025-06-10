@@ -1,0 +1,469 @@
+@model UserDetailsViewModel
+@{
+    ViewData["Title"] = "User Details - " + Model.User.Email;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">User Details</h1>        <div class="d-none d-sm-inline-block">
+            <a href="@Url.Action("Users", "Admin")" class="btn btn-sm btn-primary shadow-sm no-loading">
+                <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Users
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- User Profile Card -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">User Profile</h6>                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow">
+                            <div class="dropdown-header">User Actions:</div>
+                            <a class="dropdown-item" href="#" onclick="resetPassword('@Model.User.Id')">
+                                <i class="fas fa-key fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Reset Password
+                            </a>
+                            <a class="dropdown-item" href="#" onclick="toggleUserStatus('@Model.User.Id', @Model.User.IsActive.ToString().ToLower())">
+                                <i class="fas fa-ban fa-sm fa-fw mr-2 text-gray-400"></i>
+                                @(Model.User.IsActive ? "Deactivate" : "Activate") User
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-12 text-center">
+                            @if (!string.IsNullOrEmpty(Model.Profile?.ProfilePicture))
+                            {
+                                <img src="@Model.Profile.ProfilePicture" alt="Profile Picture" 
+                                     class="rounded-circle mb-3" width="100" height="100">
+                            }
+                            else
+                            {
+                                <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                     style="width: 100px; height: 100px;">
+                                    <span class="text-white font-weight-bold h2">
+                                        @(Model.User.FirstName?.Substring(0, 1).ToUpper() ?? "U")
+                                    </span>
+                                </div>
+                            }
+                            <h5 class="font-weight-bold">@Model.User.FirstName @Model.User.LastName</h5>
+                            <p class="text-muted">@Model.User.Email</p>
+                            
+                            @if (Model.User.IsActive)
+                            {
+                                <span class="badge badge-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">Inactive</span>
+                            }
+                            
+                            @if (Model.User.EmailConfirmed)
+                            {
+                                <span class="badge badge-info ml-1">Email Verified</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning ml-1">Email Not Verified</span>
+                            }
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p class="mb-0"><strong>Department:</strong></p>
+                            <p class="text-muted">@(Model.Profile?.Department ?? "Not specified")</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="mb-0"><strong>Position:</strong></p>
+                            <p class="text-muted">@(Model.Profile?.Position ?? "Not specified")</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p class="mb-0"><strong>Created:</strong></p>
+                            <p class="text-muted">@Model.User.CreatedAt.ToString("yyyy-MM-dd")</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="mb-0"><strong>Last Login:</strong></p>
+                            <p class="text-muted">@(Model.Profile?.LastLoginAt.ToString("yyyy-MM-dd HH:mm") ?? "Never")</p>
+                        </div>
+                    </div>
+
+                    @if (Model.Profile != null)
+                    {
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p class="mb-0"><strong>Login Count:</strong></p>
+                                <p class="text-muted">@Model.Profile.LoginCount</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <p class="mb-0"><strong>Verified:</strong></p>
+                                <p class="text-muted">@(Model.Profile.IsVerified ? "Yes" : "No")</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- User Roles and Permissions -->
+        <div class="col-xl-8 col-lg-7">
+            <!-- Roles Section -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">User Roles</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach (var role in Model.Roles)
+                        {
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-left-primary h-100">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge badge-primary">@role</span>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    onclick="removeRole('@Model.User.Id', '@role')" 
+                                                    title="Remove Role">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                      <div class="mt-3">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignRoleModal">
+                            <i class="fas fa-plus"></i> Assign New Role
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Permissions Section -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Direct Permissions</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.Permissions.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Permission</th>
+                                        <th>Category</th>
+                                        <th>Granted</th>
+                                        <th>Expires</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var permission in Model.Permissions)
+                                    {
+                                        <tr>
+                                            <td>@permission.Name</td>
+                                            <td><span class="badge badge-secondary">@permission.Category</span></td>
+                                            <td>@permission.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                            <td>
+                                                @* This would need to be adjusted based on UserPermission model *@
+                                                <span class="text-muted">Never</span>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        onclick="revokePermission('@Model.User.Id', '@permission.Name')" 
+                                                        title="Revoke Permission">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No direct permissions assigned. Permissions are inherited from roles.</p>
+                    }
+                      <div class="mt-3">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#grantPermissionModal">
+                            <i class="fas fa-plus"></i> Grant Permission
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resource Ownership Section -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Resource Ownership</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.ResourceOwnerships.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Resource Type</th>
+                                        <th>Resource ID</th>
+                                        <th>Ownership Type</th>
+                                        <th>Granted</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ownership in Model.ResourceOwnerships)
+                                    {
+                                        <tr>
+                                            <td><span class="badge badge-info">@ownership.ResourceType</span></td>
+                                            <td>@ownership.ResourceId</td>
+                                            <td><span class="badge badge-warning">@ownership.OwnershipType</span></td>
+                                            <td>@ownership.GrantedAt.ToString("yyyy-MM-dd")</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        onclick="revokeOwnership('@ownership.Id')" 
+                                                        title="Revoke Ownership">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No resource ownership assigned.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentActivities.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Description</th>
+                                        <th>Entity</th>
+                                        <th>Date</th>
+                                        <th>IP Address</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var activity in Model.RecentActivities)
+                                    {
+                                        <tr>
+                                            <td><span class="badge badge-primary">@activity.Action</span></td>
+                                            <td>@activity.Description</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(activity.EntityType))
+                                                {
+                                                    <span class="badge badge-secondary">@activity.EntityType</span>
+                                                    @if (!string.IsNullOrEmpty(activity.EntityId))
+                                                    {
+                                                        <span class="text-muted">#@activity.EntityId</span>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">-</span>
+                                                }
+                                            </td>
+                                            <td>@activity.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                            <td>@(activity.IpAddress ?? "Unknown")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No recent activities found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Role Modal -->
+<div class="modal fade" id="assignRoleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">            <div class="modal-header">
+                <h5 class="modal-title">Assign Role</h5>
+                <button type="button" class="close" data-bs-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form method="post" action="@Url.Action("AssignRole", "Admin")">
+                <input type="hidden" name="userId" value="@Model.User.Id" />
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="roleName">Select Role</label>
+                        <select class="form-control" name="roleName" required>
+                            <option value="">-- Select Role --</option>
+                            <option value="Admin">Admin</option>
+                            <option value="HotelManager">Hotel Manager</option>
+                            <option value="AttractionManager">Attraction Manager</option>
+                            <option value="CarRentalManager">Car Rental Manager</option>
+                            <option value="TravelPackageManager">Travel Package Manager</option>
+                            <option value="HotelStaff">Hotel Staff</option>
+                            <option value="AttractionStaff">Attraction Staff</option>
+                            <option value="CarRentalStaff">Car Rental Staff</option>
+                            <option value="CustomerService">Customer Service</option>
+                            <option value="Moderator">Moderator</option>
+                            <option value="ContentCreator">Content Creator</option>
+                        </select>
+                    </div>
+                </div>                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Assign Role</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Grant Permission Modal -->
+<div class="modal fade" id="grantPermissionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">            <div class="modal-header">
+                <h5 class="modal-title">Grant Permission</h5>
+                <button type="button" class="close" data-bs-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form method="post" action="@Url.Action("GrantPermission", "Admin")">
+                <input type="hidden" name="userId" value="@Model.User.Id" />
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="permissionName">Select Permission</label>
+                        <select class="form-control" name="permissionName" required>
+                            <option value="">-- Select Permission --</option>
+                            <option value="hotel.view">Hotel View</option>
+                            <option value="hotel.create">Hotel Create</option>
+                            <option value="hotel.edit">Hotel Edit</option>
+                            <option value="hotel.delete">Hotel Delete</option>
+                            <option value="attraction.view">Attraction View</option>
+                            <option value="attraction.create">Attraction Create</option>
+                            <option value="attraction.edit">Attraction Edit</option>
+                            <option value="attraction.delete">Attraction Delete</option>
+                            <option value="carrental.view">Car Rental View</option>
+                            <option value="carrental.create">Car Rental Create</option>
+                            <option value="carrental.edit">Car Rental Edit</option>
+                            <option value="carrental.delete">Car Rental Delete</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expiresAt">Expires At (Optional)</label>
+                        <input type="datetime-local" class="form-control" name="expiresAt" />
+                        <small class="form-text text-muted">Leave empty for permanent permission</small>
+                    </div>
+                </div>                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Grant Permission</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function removeRole(userId, roleName) {
+            if (confirm(`Are you sure you want to remove the role "${roleName}" from this user?`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("RemoveRole", "Admin")';
+                
+                const userIdInput = document.createElement('input');
+                userIdInput.type = 'hidden';
+                userIdInput.name = 'userId';
+                userIdInput.value = userId;
+                
+                const roleNameInput = document.createElement('input');
+                roleNameInput.type = 'hidden';
+                roleNameInput.name = 'roleName';
+                roleNameInput.value = roleName;
+                
+                form.appendChild(userIdInput);
+                form.appendChild(roleNameInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function revokePermission(userId, permissionName) {
+            if (confirm(`Are you sure you want to revoke the permission "${permissionName}" from this user?`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("RevokePermission", "Admin")';
+                
+                const userIdInput = document.createElement('input');
+                userIdInput.type = 'hidden';
+                userIdInput.name = 'userId';
+                userIdInput.value = userId;
+                
+                const permissionNameInput = document.createElement('input');
+                permissionNameInput.type = 'hidden';
+                permissionNameInput.name = 'permissionName';
+                permissionNameInput.value = permissionName;
+                
+                form.appendChild(userIdInput);
+                form.appendChild(permissionNameInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function revokeOwnership(ownershipId) {
+            if (confirm('Are you sure you want to revoke this resource ownership?')) {
+                // Implementation for revoking ownership would go here
+                alert('Revoke ownership functionality would be implemented here');
+            }
+        }
+
+        function resetPassword(userId) {
+            if (confirm('Are you sure you want to reset this user\'s password?')) {
+                // Implementation for password reset would go here
+                alert('Password reset functionality would be implemented here');
+            }
+        }
+
+        function toggleUserStatus(userId, isCurrentlyActive) {
+            const action = isCurrentlyActive ? 'deactivate' : 'activate';
+            if (confirm(`Are you sure you want to ${action} this user?`)) {
+                // Implementation for toggling user status would go here
+                alert(`User ${action} functionality would be implemented here`);
+            }
+        }
+    </script>
+}

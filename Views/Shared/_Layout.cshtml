@@ -257,9 +257,41 @@
                         @* Check if the user is on the Identity area to show 'Back to Home' *@
                         @{ 
                             var currentArea = ViewContext.RouteData.Values["area"]?.ToString();
+                        }                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <!-- Authenticated User Menu -->
+                            <div class="dropdown">
+                                <button class="btn btn-outline-light dropdown-toggle me-2" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user me-1"></i>@User.Identity.Name
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-bookmark me-2"></i>My Bookings</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-heart me-2"></i>Favorites</a></li>
+                                    <li><hr class="dropdown-divider"></li>                                    @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+                                    {
+                                        <li><a class="dropdown-item" href="@Url.Action("Dashboard", "Admin")">
+                                            <i class="fas fa-cogs me-2"></i>Admin Dashboard
+                                        </a></li>
+                                        @if (User.IsInRole("SuperAdmin"))
+                                        {
+                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Seed")">
+                                                <i class="fas fa-database me-2"></i>Database Seeding
+                                            </a></li>
+                                        }
+                                        <li><hr class="dropdown-divider"></li>
+                                    }<li>
+                                        <form method="post" action="@Url.Action("Logout", "Account", new { area = "Identity" })" class="dropdown-item p-0" id="logoutForm">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-link dropdown-item" id="logoutButton">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Sign Out
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
                         }
-
-                        @if (!string.IsNullOrEmpty(currentArea) && currentArea.Equals("Identity", StringComparison.OrdinalIgnoreCase))
+                        else if (!string.IsNullOrEmpty(currentArea) && currentArea.Equals("Identity", StringComparison.OrdinalIgnoreCase))
                         {
                             <a class="nav-link" href="@Url.Action("Index", "Home", new { area = "" })">
                                 <i class="fas fa-arrow-left me-1"></i>Back to Home
@@ -359,18 +391,38 @@
             $('.dropdown-toggle:contains("USD"), .dropdown-toggle:contains("EUR"), .dropdown-toggle:contains("VND")')
                 .text(currency);
             console.log('Currency changed to:', currency);
-        }
-        
-        // Load saved currency on page load
+        }        // Load saved currency on page load
         $(document).ready(function() {
+            // Add loaded class to body to hide any loading overlays via CSS
+            $('body').addClass('loaded');
+            
+            // Force cleanup of any loading states immediately
+            $('#loading-overlay').remove();
+            $('.loading-spinner').remove();
+            $('[id*="loading"], [class*="loading-overlay"]').remove();
+            $('button').prop('disabled', false);
+            
+            // Call site.js hideLoadingOverlay if available
+            if (typeof hideLoadingOverlay === 'function') {
+                hideLoadingOverlay();
+            }
+            
             var savedCurrency = localStorage.getItem('selectedCurrency');
             if (savedCurrency) {
                 changeCurrency(savedCurrency);
             }
+            
+            // Set up periodic cleanup to prevent stuck loading states
+            setInterval(function() {
+                if ($('#loading-overlay:visible').length > 0) {
+                    console.warn('Cleaning up stuck loading overlay');
+                    $('#loading-overlay').remove();
+                    $('.loading-spinner').remove();
+                }
+            }, 3000);
         });
         
-        // Smooth scrolling for anchor links
-        $('a[href^="#"]').on('click', function(event) {
+        // Smooth scrolling for anchor links        $('a[href^="#"]').on('click', function(event) {
             var target = $(this.getAttribute('href'));
             if( target.length ) {
                 event.preventDefault();
@@ -378,6 +430,29 @@
                     scrollTop: target.offset().top - 100
                 }, 1000);
             }
+        });
+
+        // Logout Debug
+        $('#logoutForm').on('submit', function(e) {
+            console.log('=== LOGOUT FORM SUBMIT EVENT ===');
+            console.log('Form action:', this.action);
+            console.log('Form method:', this.method);
+            console.log('Event target:', e.target);
+            console.log('Form data:', new FormData(this));
+            
+            // Allow the form to submit normally
+            console.log('Form will be submitted...');
+        });
+
+        $('#logoutButton').on('click', function(e) {
+            console.log('=== LOGOUT BUTTON CLICKED ===');
+            console.log('Button clicked:', this);
+            console.log('Event:', e);
+        });
+
+        // Also check if there are any JavaScript errors on logout
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error:', e.error);
         });
     </script>
     

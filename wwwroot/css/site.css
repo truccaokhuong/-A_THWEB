@@ -187,6 +187,13 @@ img {
   z-index: 9999;
 }
 
+/* Hide loading overlay on page load */
+body.loaded .loading-overlay {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
 .loading-spinner {
   width: 40px;
   height: 40px;
@@ -238,6 +245,102 @@ img {
 .badge-new {
   background: linear-gradient(45deg, #ff6b6b, #feca57);
   color: white;
+}
+
+/* Badge color overrides for better visibility */
+.badge {
+  --bs-badge-color: #ffffff;
+  color: var(--bs-badge-color) !important;
+}
+
+/* Default badge - Blue */
+.badge:not([class*="badge-"]) {
+  background-color: #0d6efd !important;
+  color: #ffffff !important;
+}
+
+/* Specific badge color variants */
+.badge-primary {
+  background-color: #0d6efd !important;
+  color: #ffffff !important;
+}
+
+.badge-secondary {
+  background-color: #6c757d !important;
+  color: #ffffff !important;
+}
+
+.badge-success {
+  background-color: #198754 !important;
+  color: #ffffff !important;
+}
+
+.badge-danger {
+  background-color: #dc3545 !important;
+  color: #ffffff !important;
+}
+
+.badge-warning {
+  background-color: #fd7e14 !important;
+  color: #000000 !important; /* Dark text for better contrast on orange */
+}
+
+.badge-info {
+  background-color: #0dcaf0 !important;
+  color: #000000 !important; /* Dark text for better contrast on cyan */
+}
+
+.badge-light {
+  background-color: #f8f9fa !important;
+  color: #000000 !important;
+  border: 1px solid #dee2e6 !important;
+}
+
+.badge-dark {
+  background-color: #212529 !important;
+  color: #ffffff !important;
+}
+
+/* Custom badge colors for specific use cases */
+.badge-featured {
+  background: linear-gradient(45deg, #667eea, #764ba2) !important;
+  color: #ffffff !important;
+}
+
+.badge-new {
+  background: linear-gradient(45deg, #ff6b6b, #feca57) !important;
+  color: #ffffff !important;
+}
+
+.badge-system {
+  background-color: #e83e8c !important;
+  color: #ffffff !important;
+}
+
+.badge-admin {
+  background-color: #fd7e14 !important;
+  color: #ffffff !important;
+}
+
+.badge-manager {
+  background-color: #0dcaf0 !important;
+  color: #000000 !important;
+}
+
+.badge-staff {
+  background-color: #198754 !important;
+  color: #ffffff !important;
+}
+
+.badge-customer {
+  background-color: #6f42c1 !important;
+  color: #ffffff !important;
+}
+
+/* Badge hover effects */
+.badge:hover {
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
 }
 
 /* Image gallery styles */

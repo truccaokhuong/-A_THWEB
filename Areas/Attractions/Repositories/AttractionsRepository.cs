@@ -134,32 +134,29 @@ namespace TH_WEB.Areas.Attractions.Repositories
                 .Where(a => !a.IsDeleted && a.Price >= minPrice && a.Price <= maxPrice)
                 .OrderBy(a => a.Price)
                 .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Attraction>> GetPopularAsync(int count = 10)
+        }        public async Task<IEnumerable<Attraction>> GetPopularAsync(int count = 10)
         {
             return await _context.Attractions
                 .Where(a => !a.IsDeleted && a.Status == AttractionStatus.Active)
                 .OrderByDescending(a => a.Rating)
                 .ThenByDescending(a => a.ViewCount)
+                .ThenBy(a => a.Name) // Add secondary sort for consistency
                 .Take(count)
                 .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Attraction>> GetFeaturedAsync(int count = 5)
+        }        public async Task<IEnumerable<Attraction>> GetFeaturedAsync(int count = 5)
         {
             return await _context.Attractions
                 .Where(a => !a.IsDeleted && a.Status == AttractionStatus.Active && a.IsFeatured)
                 .OrderByDescending(a => a.Rating)
+                .ThenBy(a => a.Name) // Add secondary sort for consistency
                 .Take(count)
                 .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Attraction>> GetRecentAsync(int count = 10)
+        }        public async Task<IEnumerable<Attraction>> GetRecentAsync(int count = 10)
         {
             return await _context.Attractions
                 .Where(a => !a.IsDeleted && a.Status == AttractionStatus.Active)
                 .OrderByDescending(a => a.CreatedAt)
+                .ThenBy(a => a.Name) // Add secondary sort for consistency
                 .Take(count)
                 .ToListAsync();
         }

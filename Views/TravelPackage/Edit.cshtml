@@ -1,0 +1,327 @@
+@model TH_WEB.Models.TravelPackage
+
+@{
+    ViewData["Title"] = "Edit Travel Package";
+}
+
+<div class="container">
+    <h1>Edit Travel Package</h1>
+    <h4>@Model.Name</h4>
+
+    <hr />
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Country" class="form-label"></label>
+                            <input asp-for="Country" class="form-control" />
+                            <span asp-validation-for="Country" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="City" class="form-label"></label>
+                            <input asp-for="City" class="form-control" />
+                            <span asp-validation-for="City" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="DestinationCode" class="form-label"></label>
+                            <input asp-for="DestinationCode" class="form-control" />
+                            <span asp-validation-for="DestinationCode" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="TotalPrice" class="form-label"></label>
+                            <input asp-for="TotalPrice" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="TotalPrice" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="AdultPrice" class="form-label"></label>
+                            <input asp-for="AdultPrice" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="AdultPrice" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="ChildPrice" class="form-label"></label>
+                            <input asp-for="ChildPrice" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="ChildPrice" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="InfantPrice" class="form-label"></label>
+                            <input asp-for="InfantPrice" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="InfantPrice" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="DiscountPercentage" class="form-label"></label>
+                            <input asp-for="DiscountPercentage" class="form-control" type="number" step="0.01" min="0" max="100" />
+                            <span asp-validation-for="DiscountPercentage" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="Priority" class="form-label"></label>
+                            <input asp-for="Priority" class="form-control" type="number" />
+                            <span asp-validation-for="Priority" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="MaxAdults" class="form-label"></label>
+                            <input asp-for="MaxAdults" class="form-control" type="number" min="1" />
+                            <span asp-validation-for="MaxAdults" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="MaxChildren" class="form-label"></label>
+                            <input asp-for="MaxChildren" class="form-control" type="number" min="0" />
+                            <span asp-validation-for="MaxChildren" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="MaxInfants" class="form-label"></label>
+                            <input asp-for="MaxInfants" class="form-control" type="number" min="0" />
+                            <span asp-validation-for="MaxInfants" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="StartDate" class="form-label"></label>
+                            <input asp-for="StartDate" class="form-control" type="date" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="EndDate" class="form-label"></label>
+                            <input asp-for="EndDate" class="form-control" type="date" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Region" class="form-label"></label>
+                            <input asp-for="Region" class="form-control" />
+                            <span asp-validation-for="Region" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="ImageUrl" class="form-label"></label>
+                            <input asp-for="ImageUrl" class="form-control" />
+                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="HotelId" class="form-label">Hotel (Optional)</label>
+                            <input asp-for="HotelId" class="form-control" type="number" />
+                            <span asp-validation-for="HotelId" class="text-danger"></span>
+                            <small class="form-text text-muted">Leave empty if no hotel is included</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="CarRentalId" class="form-label">Car Rental (Optional)</label>
+                            <input asp-for="CarRentalId" class="form-control" type="number" />
+                            <span asp-validation-for="CarRentalId" class="text-danger"></span>
+                            <small class="form-text text-muted">Leave empty if no car rental is included</small>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="mt-4 mb-3">Package Inclusions</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-check mb-3">
+                            <input asp-for="IncludesBreakfast" class="form-check-input" />
+                            <label asp-for="IncludesBreakfast" class="form-check-label"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check mb-3">
+                            <input asp-for="IncludesHotel" class="form-check-input" />
+                            <label asp-for="IncludesHotel" class="form-check-label"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check mb-3">
+                            <input asp-for="IncludesMeals" class="form-check-input" />
+                            <label asp-for="IncludesMeals" class="form-check-label"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-check mb-3">
+                            <input asp-for="IncludesTransfers" class="form-check-input" />
+                            <label asp-for="IncludesTransfers" class="form-check-label"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check mb-3">
+                            <input asp-for="IncludesTours" class="form-check-input" />
+                            <label asp-for="IncludesTours" class="form-check-label"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check mb-3">
+                            <input asp-for="IncludesInsurance" class="form-check-input" />
+                            <label asp-for="IncludesInsurance" class="form-check-label"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="mt-4 mb-3">Package Status</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <input asp-for="IsFeatured" class="form-check-input" />
+                            <label asp-for="IsFeatured" class="form-check-label"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <input asp-for="IsActive" class="form-check-input" />
+                            <label asp-for="IsActive" class="form-check-label"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-4">
+                    <input type="submit" value="Save Changes" class="btn btn-primary" />
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">View Details</a>
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Preview Panel -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Package Preview</h5>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid mb-3" style="max-height: 200px; width: 100%; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <div class="bg-light text-center py-5 mb-3">
+                            <i class="fas fa-image fa-3x text-muted"></i>
+                            <p class="text-muted mt-2">No image</p>
+                        </div>
+                    }
+                    
+                    <h6 class="card-title">@Model.Name</h6>
+                    <p class="text-muted small">@Model.City, @Model.Country</p>
+                    
+                    @if (Model.TotalPrice > 0)
+                    {
+                        <div class="d-flex justify-content-between">
+                            <span>Total Price:</span>
+                            <strong class="text-primary">$@Model.TotalPrice.ToString("N0")</strong>
+                        </div>
+                    }
+                    
+                    @if (Model.AdultPrice > 0)
+                    {
+                        <div class="d-flex justify-content-between">
+                            <span>Adult Price:</span>
+                            <span>$@Model.AdultPrice.ToString("N0")</span>
+                        </div>
+                    }
+                    
+                    @if (Model.ChildPrice > 0)
+                    {
+                        <div class="d-flex justify-content-between">
+                            <span>Child Price:</span>
+                            <span>$@Model.ChildPrice.ToString("N0")</span>
+                        </div>
+                    }
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted">Featured:</small><br>
+                            <span class="badge badge-@(Model.IsFeatured ? "success" : "secondary")">
+                                @(Model.IsFeatured ? "Yes" : "No")
+                            </span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Active:</small><br>
+                            <span class="badge badge-@(Model.IsActive ? "success" : "danger")">
+                                @(Model.IsActive ? "Yes" : "No")
+                            </span>
+                        </div>
+                    </div>
+                    
+                    @if (Model.StartDate != default && Model.EndDate != default)
+                    {
+                        <hr>
+                        <small class="text-muted">Duration:</small><br>
+                        <small>@Model.StartDate.ToString("MMM dd") - @Model.EndDate.ToString("MMM dd, yyyy")</small>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

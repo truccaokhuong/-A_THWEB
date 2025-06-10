@@ -78,11 +78,9 @@ namespace TH_WEB.Areas.Attractions.Validation
     public class ValidLongitudeAttribute : ValidCoordinateAttribute
     {
         public ValidLongitudeAttribute() : base(-180, 180) { }
-    }
-
-    public class ValidUrlAttribute : ValidationAttribute
+    }    public class ValidUrlAttribute : ValidationAttribute
     {
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
                 return true; // Allow null/empty for optional URLs
@@ -105,11 +103,9 @@ namespace TH_WEB.Areas.Attractions.Validation
         {
             return $"{name} phải là một URL hợp lệ (bắt đầu bằng http:// hoặc https://)";
         }
-    }
-
-    public class ValidPhoneNumberAttribute : ValidationAttribute
+    }    public class ValidPhoneNumberAttribute : ValidationAttribute
     {
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
                 return true; // Allow null/empty for optional phone numbers
@@ -126,11 +122,9 @@ namespace TH_WEB.Areas.Attractions.Validation
         {
             return $"{name} không đúng định dạng số điện thoại Việt Nam";
         }
-    }
-
-    public class ValidEmailAttribute : ValidationAttribute
+    }    public class ValidEmailAttribute : ValidationAttribute
     {
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
                 return true; // Allow null/empty for optional emails
@@ -168,11 +162,9 @@ namespace TH_WEB.Areas.Attractions.Validation
             var categories = string.Join(", ", Enum.GetNames(typeof(TH_WEB.Areas.Attractions.Models.AttractionCategory)));
             return $"{name} phải là một trong các loại hình: {categories}";
         }
-    }
-
-    public class ValidRatingAttribute : ValidationAttribute
+    }    public class ValidRatingAttribute : ValidationAttribute
     {
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             if (value == null) return true; // Allow null for optional ratings
 
@@ -193,16 +185,14 @@ namespace TH_WEB.Areas.Attractions.Validation
         {
             return $"{name} phải từ 0 đến 5 sao";
         }
-    }
-
-    public class ValidImageUrlAttribute : ValidationAttribute
+    }    public class ValidImageUrlAttribute : ValidationAttribute
     {
         private static readonly HashSet<string> ValidExtensions = new HashSet<string>
         {
             ".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"
         };
 
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
                 return true; // Allow null/empty for optional image URLs
@@ -234,7 +224,7 @@ namespace TH_WEB.Areas.Attractions.Validation
             _isStartDate = isStartDate;
         }
 
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
             if (value == null) return ValidationResult.Success;
 
@@ -262,11 +252,9 @@ namespace TH_WEB.Areas.Attractions.Validation
 
             return ValidationResult.Success;
         }
-    }
-
-    public class ValidBusinessHoursAttribute : ValidationAttribute
+    }    public class ValidBusinessHoursAttribute : ValidationAttribute
     {
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
                 return true; // Allow null/empty
@@ -294,11 +282,9 @@ namespace TH_WEB.Areas.Attractions.Validation
         {
             return $"{name} phải có định dạng HH:mm-HH:mm (VD: 08:00-18:00)";
         }
-    }
-
-    public class ValidDiscountPercentageAttribute : ValidationAttribute
+    }    public class ValidDiscountPercentageAttribute : ValidationAttribute
     {
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             if (value == null) return true; // Allow null for optional discounts
 
@@ -319,9 +305,7 @@ namespace TH_WEB.Areas.Attractions.Validation
         {
             return $"{name} phải từ 0% đến 100%";
         }
-    }
-
-    public class ValidTagsAttribute : ValidationAttribute
+    }    public class ValidTagsAttribute : ValidationAttribute
     {
         private readonly int _maxTags;
         private readonly int _maxTagLength;
@@ -332,7 +316,7 @@ namespace TH_WEB.Areas.Attractions.Validation
             _maxTagLength = maxTagLength;
         }
 
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             if (value == null) return true; // Allow null for optional tags
 

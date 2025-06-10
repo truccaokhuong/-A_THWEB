@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Login Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; }
+        .btn { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .btn-google { background: #db4437; color: white; border: none; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 TEST LOGIN PAGE</h1>
+        
+        <div class="success">✅ LoginRegister view đã load thành công!</div>
+        
+        <h2>External Logins:</h2>
+        @if (ViewBag.ExternalLogins?.Count > 0)
+        {
+            <div class="success">✅ Google OAuth đã được cấu hình! (Count: @ViewBag.ExternalLogins.Count)</div>
+            
+            <form asp-controller="ExternalLogin" asp-action="ExternalLogin" method="post">
+                @foreach (var provider in ViewBag.ExternalLogins)
+                {
+                    @if (provider.Name == "Google")
+                    {
+                        <button type="submit" class="btn btn-google" name="provider" value="@provider.Name">
+                            🔍 TEST GOOGLE LOGIN
+                        </button>
+                    }
+                }
+                <input type="hidden" name="returnUrl" value="/" />
+            </form>
+        }
+        else
+        {
+            <div class="error">❌ Google OAuth chưa được cấu hình</div>
+        }
+        
+        <h2>Debug Info:</h2>
+        <ul>
+            <li>Active Tab: @ViewBag.ActiveTab</li>
+            <li>External Logins Count: @(ViewBag.ExternalLogins?.Count ?? 0)</li>
+            <li>Current Time: @DateTime.Now</li>
+        </ul>
+        
+        <h2>Quick Links:</h2>
+        <ul>
+            <li><a href="/">🏠 Home Page</a></li>
+            <li><a href="/Identity/Account/Test">🧪 Test Action</a></li>
+            <li><a href="/oauth-test.html">🔧 OAuth Test Tool</a></li>
+        </ul>
+    </div>
+</body>
+</html>

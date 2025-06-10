@@ -1,0 +1,279 @@
+@model List<UserManagementViewModel>
+@{
+    ViewData["Title"] = "User Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">User Management</h1>
+        <div class="d-none d-sm-inline-block">            <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-sm btn-primary shadow-sm no-loading">
+                <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Search Users</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" action="@Url.Action("Users", "Admin")">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="search">Search by Email or Name</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="@ViewBag.Search" placeholder="Enter email or name...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="pageSize">Results per page</label>                            <select class="form-control" id="pageSize" name="pageSize">
+                                <option value="10" selected="@(ViewBag.PageSize == 10)">10</option>
+                                <option value="20" selected="@(ViewBag.PageSize == 20)">20</option>
+                                <option value="50" selected="@(ViewBag.PageSize == 50)">50</option>
+                                <option value="100" selected="@(ViewBag.PageSize == 100)">100</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>&nbsp;</label>                            <div>
+                                <button type="submit" class="btn btn-primary mr-2 no-loading">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                                <a href="@Url.Action("Users", "Admin")" class="btn btn-secondary no-loading">
+                                    <i class="fas fa-times"></i> Clear
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Users List</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="usersTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Avatar</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Roles</th>
+                            <th>Status</th>
+                            <th>Last Activity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var userModel in Model)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    @if (!string.IsNullOrEmpty(userModel.Profile?.ProfilePicture))
+                                    {
+                                        <img src="@userModel.Profile.ProfilePicture" alt="Avatar" 
+                                             class="rounded-circle" width="40" height="40">
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                             style="width: 40px; height: 40px;">
+                                            <span class="text-white font-weight-bold">
+                                                @(userModel.User.FirstName?.Substring(0, 1).ToUpper() ?? "U")
+                                            </span>
+                                        </div>
+                                    }
+                                </td>
+                                <td>
+                                    <strong>@userModel.User.FirstName @userModel.User.LastName</strong>
+                                    @if (userModel.Profile != null)
+                                    {
+                                        <br><small class="text-muted">@userModel.Profile.Position - @userModel.Profile.Department</small>
+                                    }
+                                </td>
+                                <td>
+                                    @userModel.User.Email
+                                    @if (userModel.User.EmailConfirmed)
+                                    {
+                                        <i class="fas fa-check-circle text-success ml-1" title="Email Verified"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-exclamation-circle text-warning ml-1" title="Email Not Verified"></i>
+                                    }
+                                </td>
+                                <td>
+                                    @foreach (var role in userModel.Roles)
+                                    {
+                                        <span class="badge badge-info mr-1">@role</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (userModel.User.IsActive)
+                                    {
+                                        <span class="badge badge-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-danger">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (userModel.LastActivity != null)
+                                    {
+                                        <small>
+                                            @userModel.LastActivity.CreatedAt.ToString("MM/dd/yyyy HH:mm")
+                                            <br>
+                                            <span class="text-muted">@userModel.LastActivity.Action</span>
+                                        </small>
+                                    }
+                                    else
+                                    {
+                                        <small class="text-muted">No recent activity</small>
+                                    }
+                                </td>
+                                <td>                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("UserDetails", "Admin", new { id = userModel.User.Id })" 
+                                           class="btn btn-sm btn-primary no-loading" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-warning no-loading" 
+                                                onclick="toggleUserStatus('@userModel.User.Id', @userModel.User.IsActive.ToString().ToLower())"
+                                                title="@(userModel.User.IsActive ? "Deactivate" : "Activate")">
+                                            <i class="fas fa-@(userModel.User.IsActive ? "ban" : "check")"></i>
+                                        </button>                                        <button type="button" class="btn btn-sm btn-info no-loading" 
+                                                data-bs-toggle="modal" data-bs-target="#assignRoleModal" 
+                                                onclick="prepareAssignRole('@userModel.User.Id', '@userModel.User.Email')"
+                                                title="Assign Role">
+                                            <i class="fas fa-user-tag"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="User pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="?page=@(ViewBag.CurrentPage - 1)&pageSize=@ViewBag.PageSize&search=@ViewBag.Search">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min((int)ViewBag.TotalPages, ViewBag.CurrentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="?page=@i&pageSize=@ViewBag.PageSize&search=@ViewBag.Search">@i</a>
+                            </li>
+                        }
+
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="?page=@(ViewBag.CurrentPage + 1)&pageSize=@ViewBag.PageSize&search=@ViewBag.Search">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Assign Role Modal -->
+<div class="modal fade" id="assignRoleModal" tabindex="-1" role="dialog" aria-labelledby="assignRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">            <div class="modal-header">
+                <h5 class="modal-title" id="assignRoleModalLabel">Assign Role</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="assignRoleForm" method="post" action="@Url.Action("AssignRole", "Admin")">
+                <div class="modal-body">
+                    <input type="hidden" id="assignUserId" name="userId" />
+                    <div class="form-group">
+                        <label for="userEmail">User Email</label>
+                        <input type="text" class="form-control" id="userEmail" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="roleName">Select Role</label>
+                        <select class="form-control" id="roleName" name="roleName" required>
+                            <option value="">-- Select Role --</option>
+                            <option value="Admin">Admin</option>
+                            <option value="HotelManager">Hotel Manager</option>
+                            <option value="AttractionManager">Attraction Manager</option>
+                            <option value="CarRentalManager">Car Rental Manager</option>
+                            <option value="TravelPackageManager">Travel Package Manager</option>
+                            <option value="HotelStaff">Hotel Staff</option>
+                            <option value="AttractionStaff">Attraction Staff</option>
+                            <option value="CarRentalStaff">Car Rental Staff</option>
+                            <option value="CustomerService">Customer Service</option>
+                            <option value="Moderator">Moderator</option>
+                            <option value="ContentCreator">Content Creator</option>
+                        </select>
+                    </div>
+                </div>                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Assign Role</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function prepareAssignRole(userId, userEmail) {
+            document.getElementById('assignUserId').value = userId;
+            document.getElementById('userEmail').value = userEmail;
+        }
+
+        function toggleUserStatus(userId, isCurrentlyActive) {
+            const action = isCurrentlyActive ? 'deactivate' : 'activate';
+            const message = `Are you sure you want to ${action} this user?`;
+            
+            if (confirm(message)) {
+                // Here you would implement the toggle user status functionality
+                // For now, we'll just show an alert
+                alert(`User ${action} functionality would be implemented here`);
+            }
+        }
+
+        // Initialize DataTable if available
+        $(document).ready(function() {
+            if ($.fn.DataTable) {
+                $('#usersTable').DataTable({
+                    "pageLength": 25,
+                    "ordering": true,
+                    "searching": false, // We have our own search
+                    "paging": false,    // We have our own pagination
+                    "info": false,
+                    "autoWidth": false,
+                    "responsive": true
+                });
+            }
+        });
+    </script>
+}

@@ -1,0 +1,420 @@
+@model List<RoleManagementViewModel>
+@{
+    ViewData["Title"] = "Role Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Role Management</h1>
+        <div class="d-none d-sm-inline-block">            <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-sm btn-primary shadow-sm no-loading">
+                <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Roles Overview -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">System Roles</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                @foreach (var roleModel in Model)
+                {
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            @roleModel.Role.Name
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            @roleModel.UserCount Users
+                                        </div>
+                                        <div class="text-xs text-gray-600">
+                                            @roleModel.Permissions.Count Permissions
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-user-tag fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>                                <div class="mt-3">
+                                    <a href="@Url.Action("RoleDetails", "Admin", new { id = roleModel.Role.Id })" 
+                                       class="btn btn-primary btn-sm no-loading">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Roles Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Roles List</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="rolesTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Role Name</th>
+                            <th>Permissions</th>
+                            <th>Users</th>
+                            <th>Role Type</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var roleModel in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@roleModel.Role.Name</strong>
+                                    @if (roleModel.Role.Name == "SuperAdmin")
+                                    {
+                                        <span class="badge badge-danger ml-2">System</span>
+                                    }
+                                    else if (roleModel.Role.Name == "Admin")
+                                    {
+                                        <span class="badge badge-warning ml-2">Admin</span>
+                                    }
+                                    else if (roleModel.Role.Name.Contains("Manager"))
+                                    {
+                                        <span class="badge badge-info ml-2">Manager</span>
+                                    }
+                                    else if (roleModel.Role.Name.Contains("Staff"))
+                                    {
+                                        <span class="badge badge-success ml-2">Staff</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary ml-2">Other</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap">
+                                        @foreach (var permission in roleModel.Permissions.Take(3))
+                                        {
+                                            <span class="badge badge-light mr-1 mb-1">@permission.Name</span>
+                                        }
+                                        @if (roleModel.Permissions.Count > 3)
+                                        {
+                                            <span class="badge badge-secondary">+@(roleModel.Permissions.Count - 3) more</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="h5 mb-0 font-weight-bold text-gray-800">@roleModel.UserCount</span>
+                                    <small class="text-muted">users</small>
+                                </td>
+                                <td>
+                                    @if (roleModel.Role.Name == "SuperAdmin" || roleModel.Role.Name == "Admin")
+                                    {
+                                        <span class="text-danger">System Role</span>
+                                    }
+                                    else if (roleModel.Role.Name.Contains("Manager"))
+                                    {
+                                        <span class="text-info">Management</span>
+                                    }
+                                    else if (roleModel.Role.Name.Contains("Staff"))
+                                    {
+                                        <span class="text-success">Operational</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-secondary">General</span>
+                                    }
+                                </td>
+                                <td>                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("RoleDetails", "Admin", new { id = roleModel.Role.Id })" 
+                                           class="btn btn-sm btn-primary no-loading" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>                                        @if (roleModel.Role.Name != "SuperAdmin" && roleModel.Role.Name != "Admin")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-warning no-loading" 
+                                                    onclick="editRole('@roleModel.Role.Id', '@roleModel.Role.Name')" 
+                                                    title="Edit Role">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger no-loading" 
+                                                    onclick="deleteRole('@roleModel.Role.Id', '@roleModel.Role.Name', @roleModel.UserCount)" 
+                                                    title="Delete Role">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Statistics -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Role Distribution</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="roleDistributionChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        @foreach (var roleModel in Model.Take(5))
+                        {
+                            <span class="mr-2">
+                                <i class="fas fa-circle text-primary"></i> @roleModel.Role.Name (@roleModel.UserCount)
+                            </span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action" 
+                           onclick="createNewRole()">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-plus text-success mr-2"></i>
+                                    Create New Role
+                                </h6>
+                            </div>
+                            <p class="mb-1">Add a new role to the system with custom permissions.</p>
+                        </a>
+                        
+                        <a href="#" class="list-group-item list-group-item-action" 
+                           onclick="bulkRoleActions()">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-users-cog text-info mr-2"></i>
+                                    Bulk Role Management
+                                </h6>
+                            </div>
+                            <p class="mb-1">Assign or remove roles from multiple users at once.</p>
+                        </a>
+                        
+                        <a href="#" class="list-group-item list-group-item-action" 
+                           onclick="exportRoleReport()">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-download text-warning mr-2"></i>
+                                    Export Role Report
+                                </h6>
+                            </div>
+                            <p class="mb-1">Download a comprehensive report of all roles and permissions.</p>
+                        </a>
+                        
+                        <a href="#" class="list-group-item list-group-item-action" 
+                           onclick="roleAuditLog()">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-history text-secondary mr-2"></i>
+                                    Role Audit Log
+                                </h6>
+                            </div>
+                            <p class="mb-1">View the history of role changes and assignments.</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Role Distribution Chart
+        var ctx = document.getElementById("roleDistributionChart");
+        var roleDistributionChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [@Html.Raw(string.Join(",", Model.Select(r => "'" + r.Role.Name + "'")))],
+                datasets: [{
+                    data: [@string.Join(",", Model.Select(r => r.UserCount))],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'],
+                    hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#d52a1a', '#5a5c69'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10,
+                },
+                legend: {
+                    display: false
+                },
+                cutoutPercentage: 80,
+            },
+        });
+
+        // Initialize DataTable
+        $(document).ready(function() {
+            if ($.fn.DataTable) {
+                $('#rolesTable').DataTable({
+                    "pageLength": 25,
+                    "ordering": true,
+                    "searching": true,
+                    "autoWidth": false,
+                    "responsive": true
+                });
+            }
+        });
+
+        // Role management functions        function editRole(roleId, roleName) {
+            const newName = prompt(`Edit role name:`, roleName);
+            if (newName && newName !== roleName) {
+                fetch('/Admin/EditRole', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: roleId,
+                        name: newName
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Role updated successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while updating the role');
+                });
+            }
+        }
+
+        function deleteRole(roleId, roleName, userCount) {
+            if (userCount > 0) {
+                alert(`Cannot delete role "${roleName}" because it has ${userCount} assigned users. Please reassign users first.`);
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete the role "${roleName}"?`)) {
+                fetch('/Admin/DeleteRole', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: roleId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Role deleted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the role');
+                });
+            }
+        }
+
+        function createNewRole() {
+            const roleName = prompt('Enter new role name:');
+            if (roleName) {
+                fetch('/Admin/CreateRole', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: roleName
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Role created successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while creating the role');
+                });
+            }
+        }        function bulkRoleActions() {
+            // Simple bulk action implementation
+            const action = prompt('Enter bulk action (assign-users, export-data):');
+            if (action) {
+                switch(action.toLowerCase()) {
+                    case 'export-data':
+                        exportRoleReport();
+                        break;
+                    case 'assign-users':
+                        alert('Bulk user assignment functionality - would open a modal with user selection');
+                        break;
+                    default:
+                        alert('Available actions: assign-users, export-data');
+                }
+            }
+        }
+
+        function exportRoleReport() {
+            // Simple export implementation
+            const data = @Html.Raw(Json.Serialize(Model));
+            let csvContent = "Role Name,User Count,Permissions Count,Type\n";
+            
+            data.forEach(role => {
+                const roleType = role.role.name === 'SuperAdmin' || role.role.name === 'Admin' ? 'System' : 
+                               role.role.name.includes('Manager') ? 'Management' : 
+                               role.role.name.includes('Staff') ? 'Operational' : 'General';
+                csvContent += `"${role.role.name}",${role.userCount},${role.permissions.length},"${roleType}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `roles_report_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function roleAuditLog() {
+            // Redirect to a dedicated audit log page or show in modal
+            window.location.href = '/Admin/ActivityLog?entityType=RoleManagement';
+        }
+    </script>
+}

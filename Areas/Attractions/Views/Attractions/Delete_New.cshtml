@@ -1,0 +1,68 @@
+@model TH_WEB.Areas.Attractions.Models.Attraction
+
+@{
+    ViewData["Title"] = "Delete Attraction";
+}
+
+<div class="container-fluid px-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3">Delete Attraction</h1>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="alert alert-danger" role="alert">
+                        <h4 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle"></i> Confirm Deletion
+                        </h4>
+                        <p>Are you sure you want to delete this attraction? This action cannot be undone.</p>
+                    </div>
+
+                    <!-- Debug Info -->
+                    <div class="alert alert-info mb-3">
+                        <strong>Debug Info:</strong><br>
+                        Model ID: @Model.Id<br>
+                        Model Name: @Model.Name<br>
+                        Form Action: @Url.Action("Delete", new { id = Model.Id })
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <h3>@Model.Name</h3>
+                            <p><strong>Location:</strong> @Model.Location</p>
+                            <p><strong>Address:</strong> @Model.Address, @Model.City, @Model.State, @Model.Country</p>
+                            <p><strong>Category:</strong> @Model.Category</p>
+                            <p><strong>Price:</strong> $@Model.Price.ToString("F2")</p>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Simple Delete Form -->
+                    <form method="post" action="@Url.Action("Delete", new { id = Model.Id })">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        
+                        <button type="submit" class="btn btn-danger btn-lg" onclick="return confirm('Are you sure you want to delete this attraction?')">
+                            <i class="fas fa-trash"></i> DELETE ATTRACTION
+                        </button>
+                        
+                        <a href="@Url.Action("Index")" class="btn btn-secondary btn-lg ml-2">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+console.log('Delete page loaded');
+console.log('Model ID: @Model.Id');
+</script>

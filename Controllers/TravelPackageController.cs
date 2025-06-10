@@ -55,12 +55,10 @@ namespace TH_WEB.Controllers
         public IActionResult Create()
         {
             return View();
-        }
-
-        // POST: TravelPackage/Create
+        }        // POST: TravelPackage/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description,DetailedDescription,ImageUrl,Type,Destination,DestinationCode,Country,Region,DepartureCity,DepartureCityCode,Duration,Nights,BasePrice,OriginalPrice,DiscountPercentage,FinalPrice,Currency,AdultPrice,ChildPrice,InfantPrice,OutboundFlightId,ReturnFlightId,FlightClass,HotelId,NumberOfNights,RoomType,NumberOfRooms,CarRentalId,IncludesCarRental,CarRentalDays,IncludesFlights,IncludesHotel,IncludesBreakfast,IncludesMeals,MealPlan,IncludesTransfers,IncludesTours,IncludesInsurance,IncludesVisa,IncludesWifi,Inclusions,Exclusions,ValidFrom,ValidTo,MinimumStay,MaximumStay,AdvanceBookingDays,MaxAdvanceBookingDays,CancellationPolicy,CancellationType,CancellationFee,IsActive,IsFeatured,IsInstantBooking,IsTopRated,IsBestSeller,MaxGuests,MinGuests,MaxAdults,MaxChildren,MaxInfants,AverageRating,TotalReviews,TotalBookings,SeoTitle,SeoDescription,SeoKeywords,Slug,Status,Priority,ViewCount,BookingCount,CreatedBy,UpdatedBy")] TravelPackage package)
+        public async Task<IActionResult> Create([Bind("Name,Description,DestinationCode,Country,Region,City,StartDate,EndDate,AdultPrice,ChildPrice,InfantPrice,TotalPrice,MaxAdults,MaxChildren,MaxInfants,IsActive,IsFeatured,Priority,ImageUrl,HotelId,CarRentalId,DiscountPercentage,IncludesHotel,IncludesBreakfast,IncludesMeals,IncludesTransfers,IncludesTours,IncludesInsurance")] TravelPackage package)
         {
             if (ModelState.IsValid)
             {
@@ -84,12 +82,10 @@ namespace TH_WEB.Controllers
                 return NotFound();
             }
             return View(package);
-        }
-
-        // POST: TravelPackage/Edit/5
+        }        // POST: TravelPackage/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,DetailedDescription,ImageUrl,Type,Destination,DestinationCode,Country,Region,DepartureCity,DepartureCityCode,Duration,Nights,BasePrice,OriginalPrice,DiscountPercentage,FinalPrice,Currency,AdultPrice,ChildPrice,InfantPrice,OutboundFlightId,ReturnFlightId,FlightClass,HotelId,NumberOfNights,RoomType,NumberOfRooms,CarRentalId,IncludesCarRental,CarRentalDays,IncludesFlights,IncludesHotel,IncludesBreakfast,IncludesMeals,MealPlan,IncludesTransfers,IncludesTours,IncludesInsurance,IncludesVisa,IncludesWifi,Inclusions,Exclusions,ValidFrom,ValidTo,MinimumStay,MaximumStay,AdvanceBookingDays,MaxAdvanceBookingDays,CancellationPolicy,CancellationType,CancellationFee,IsActive,IsFeatured,IsInstantBooking,IsTopRated,IsBestSeller,MaxGuests,MinGuests,MaxAdults,MaxChildren,MaxInfants,AverageRating,TotalReviews,TotalBookings,SeoTitle,SeoDescription,SeoKeywords,Slug,Status,Priority,ViewCount,BookingCount,CreatedBy,UpdatedBy")] TravelPackage package)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,DestinationCode,Country,Region,City,StartDate,EndDate,AdultPrice,ChildPrice,InfantPrice,TotalPrice,MaxAdults,MaxChildren,MaxInfants,IsActive,IsFeatured,Priority,ImageUrl,HotelId,CarRentalId,DiscountPercentage,IncludesHotel,IncludesBreakfast,IncludesMeals,IncludesTransfers,IncludesTours,IncludesInsurance")] TravelPackage package)
         {
             if (id != package.Id)
             {

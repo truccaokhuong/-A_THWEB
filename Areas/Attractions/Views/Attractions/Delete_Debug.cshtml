@@ -1,0 +1,38 @@
+@model TH_WEB.Areas.Attractions.Models.Attraction
+
+@{
+    ViewData["Title"] = "Delete Attraction";
+}
+
+<h1>DELETE ATTRACTION</h1>
+
+<div style="background: red; color: white; padding: 20px; margin: 20px;">
+    <h2>CONFIRM DELETE</h2>
+    <p><strong>Attraction Name:</strong> @Model.Name</p>
+    <p><strong>ID:</strong> @Model.Id</p>
+    <p><strong>Location:</strong> @Model.Location</p>
+    <p><strong>Price:</strong> $@Model.Price</p>
+</div>
+
+<form method="post" action="/Attractions/Attractions/Delete/@Model.Id" style="margin: 20px;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+    
+    <button type="submit" 
+            style="background: red; color: white; padding: 15px 30px; font-size: 18px; border: none; cursor: pointer;"
+            onclick="return confirm('Delete this attraction?')">
+        DELETE ATTRACTION
+    </button>
+    
+    <a href="/Attractions/Attractions" 
+       style="background: gray; color: white; padding: 15px 30px; font-size: 18px; text-decoration: none; margin-left: 10px;">
+        CANCEL
+    </a>
+</form>
+
+<div style="background: yellow; padding: 20px; margin: 20px;">
+    <h3>DEBUG INFO:</h3>
+    <p>Model: @(Model != null ? "OK" : "NULL")</p>
+    <p>Form Action: /Attractions/Attractions/Delete/@Model.Id</p>
+    <p>Current URL: @Context.Request.Path</p>
+</div>

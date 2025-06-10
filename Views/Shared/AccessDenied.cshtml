@@ -1,0 +1,222 @@
+@using System.Security.Claims
+@using System.Linq
+@{
+    ViewData["Title"] = "Access Denied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .access-denied-container {
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+    
+    .access-denied-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        padding: 3rem;
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+        margin: 2rem;
+    }
+      .access-denied-icon {
+        font-size: 5rem;
+        color: #dc3545;
+        margin-bottom: 1.5rem;
+        animation: shake 0.5s ease-in-out;
+    }
+    
+    @@keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+    
+    .access-denied-title {
+        color: #dc3545;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .access-denied-message {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+    
+    .access-denied-details {
+        background: #f8f9fa;
+        border-left: 4px solid #dc3545;
+        padding: 1rem;
+        margin: 1.5rem 0;
+        text-align: left;
+        border-radius: 0 8px 8px 0;
+    }
+    
+    .access-denied-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+    
+    .btn-home {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        border: none;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        border-radius: 25px;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-home:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-back {
+        background: #6c757d;
+        border: none;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        border-radius: 25px;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-back:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .contact-admin {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        color: #856404;
+    }
+</style>
+
+<div class="access-denied-container">
+    <div class="access-denied-card">
+        <div class="access-denied-icon">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        
+        <h1 class="access-denied-title">Access Denied</h1>
+        
+        <p class="access-denied-message">
+            Sorry, you don't have permission to access this resource. 
+            Your current role doesn't include the required permissions for this action.
+        </p>
+          <div class="access-denied-details">
+            <strong>What happened?</strong><br>
+            @{
+                var attemptedPermission = ViewContext.HttpContext.Items["AttemptedPermission"]?.ToString();
+                var attemptedAction = ViewContext.HttpContext.Items["AttemptedAction"]?.ToString();
+                var attemptedResource = ViewContext.HttpContext.Items["AttemptedResource"]?.ToString();
+                var attemptedResourceId = ViewContext.HttpContext.Items["AttemptedResourceId"]?.ToString();
+            }
+            
+            @if (!string.IsNullOrEmpty(attemptedAction))
+            {
+                <span>You attempted to access: <strong>@attemptedAction</strong></span><br>
+            }
+            
+            @if (!string.IsNullOrEmpty(attemptedPermission))
+            {
+                <span>Required permission(s): <strong>@attemptedPermission</strong></span><br>
+            }
+            
+            @if (!string.IsNullOrEmpty(attemptedResource))
+            {
+                <span>Attempted resource: <strong>@attemptedResource @(attemptedResourceId)</strong></span><br>
+            }
+            
+            <br>This could be because:
+            <ul class="mt-2 mb-0">
+                <li>Your account doesn't have the required role</li>
+                <li>The resource requires higher-level permissions</li>
+                <li>You need to be logged in with a different account</li>
+                @if (!string.IsNullOrEmpty(attemptedResource))
+                {
+                    <li>You don't own this resource and lack admin permissions</li>
+                }
+            </ul>
+        </div>        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="access-denied-details">
+                <strong>Your Current Information:</strong><br>
+                <i class="fas fa-user me-1"></i> User: @User.Identity.Name<br>                @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin") || User.IsInRole("Manager"))
+                {
+                    var userRoles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
+                    var rolesList = string.Join(", ", userRoles);
+                    @:<i class="fas fa-user-tag me-1"></i> Roles: @rolesList
+                }
+                else
+                {
+                    @:<i class="fas fa-user-tag me-1"></i> Role: User
+                }
+            </div>
+        }
+        else
+        {
+            <div class="access-denied-details">
+                <strong>Not Logged In:</strong><br>
+                You are not currently logged in. Some resources require authentication.
+            </div>
+        }
+        
+        <div class="access-denied-actions">
+            <a href="@Url.Action("Index", "Home")" class="btn btn-home">
+                <i class="fas fa-home me-2"></i>Go Home
+            </a>
+            
+            <a href="javascript:history.back()" class="btn btn-back">
+                <i class="fas fa-arrow-left me-2"></i>Go Back
+            </a>
+            
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <a href="@Url.Action("Login", "Account", new { area = "Identity" })" class="btn btn-home">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+            }
+        </div>
+        
+        <div class="contact-admin">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Need Access?</strong> Contact your administrator if you believe you should have access to this resource.
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Add some interactive effects
+    $('.access-denied-icon').hover(
+        function() { $(this).addClass('text-danger'); },
+        function() { $(this).removeClass('text-danger'); }
+    );
+    
+    // Auto-focus on the home button for keyboard navigation
+    $('.btn-home').first().focus();
+});
+</script>

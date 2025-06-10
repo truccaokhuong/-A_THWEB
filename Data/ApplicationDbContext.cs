@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TH_WEB.Models;
+using TH_WEB.Models.Authorization;
 using TH_WEB.Areas.Attractions.Models;
 using System;
 
 namespace TH_WEB.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-    {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    {        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
@@ -27,23 +27,67 @@ namespace TH_WEB.Data
         public DbSet<PackageItinerary> PackageItineraries { get; set; } = null!;
         public DbSet<PackageExtra> PackageExtras { get; set; } = null!;
         public DbSet<PackageFAQ> PackageFAQs { get; set; } = null!;
-        public DbSet<CarType> CarTypes { get; set; } = null!;
-        public DbSet<Location> Locations { get; set; } = null!;
+        public DbSet<CarType> CarTypes { get; set; } = null!;        public DbSet<Location> Locations { get; set; } = null!;
         public DbSet<RentalLocation> RentalLocations { get; set; } = null!;
         public DbSet<CarRentalExtra> CarRentalExtras { get; set; } = null!;
         public DbSet<Attraction> Attractions { get; set; } = null!;
         
+        // Authorization tables
+        public DbSet<Permission> Permissions { get; set; } = null!;
+        public DbSet<RolePermission> RolePermissions { get; set; } = null!;
+        public DbSet<UserPermission> UserPermissions { get; set; } = null!;
+        public DbSet<UserProfile> UserProfiles { get; set; } = null!;
+        public DbSet<UserActivity> UserActivities { get; set; } = null!;
+        public DbSet<ResourceOwnership> ResourceOwnerships { get; set; } = null!;
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
-            // Configure decimal precision for Attraction model
+              // Configure decimal precision for Attraction model
             modelBuilder.Entity<Attraction>()
                 .Property(a => a.Price)
                 .HasPrecision(18, 2);
 
             modelBuilder.Entity<Attraction>()
                 .Property(a => a.Rating)
+                .HasPrecision(3, 2);
+            
+            // Configure decimal precision for other models
+            modelBuilder.Entity<Location>()
+                .Property(l => l.Latitude)
+                .HasPrecision(10, 8);
+            
+            modelBuilder.Entity<Location>()
+                .Property(l => l.Longitude)
+                .HasPrecision(11, 8);
+            
+            modelBuilder.Entity<PackageExtra>()
+                .Property(pe => pe.Price)
+                .HasPrecision(18, 2);
+            
+            modelBuilder.Entity<TravelPackage>()
+                .Property(tp => tp.DiscountPercentage)
+                .HasPrecision(5, 2);
+            
+            // Configure decimal precision for Review ratings
+            modelBuilder.Entity<TH_WEB.Models.Review>()
+                .Property(r => r.CleanlinessRating)
+                .HasPrecision(3, 2);
+            
+            modelBuilder.Entity<TH_WEB.Models.Review>()
+                .Property(r => r.ComfortRating)
+                .HasPrecision(3, 2);
+            
+            modelBuilder.Entity<TH_WEB.Models.Review>()
+                .Property(r => r.LocationRating)
+                .HasPrecision(3, 2);
+            
+            modelBuilder.Entity<TH_WEB.Models.Review>()
+                .Property(r => r.ServiceRating)
+                .HasPrecision(3, 2);
+            
+            modelBuilder.Entity<TH_WEB.Models.Review>()
+                .Property(r => r.ValueForMoneyRating)
                 .HasPrecision(3, 2);
             
             // Avoid multiple cascade paths
@@ -434,9 +478,7 @@ namespace TH_WEB.Data
             modelBuilder.Entity<Location>().HasData(
                 new Location { Id = 1, Name = "Miami International Airport", Address = "2100 NW 42nd Ave", City = "Miami", Country = "USA", PostalCode = "33142", Latitude = 25.7959m, Longitude = -80.2902m },
                 new Location { Id = 2, Name = "New York City", Address = "Times Square", City = "New York", Country = "USA", PostalCode = "10036", Latitude = 40.7580m, Longitude = -73.9855m }
-            );
-
-             modelBuilder.Entity<CarRental>().HasData(
+            );             modelBuilder.Entity<CarRental>().HasData(
                 new CarRental
                 {
                     Id = 1,
@@ -466,8 +508,7 @@ namespace TH_WEB.Data
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
-                }
-            );
+                }            );            
         }
     }
 }

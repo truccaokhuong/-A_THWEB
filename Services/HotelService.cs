@@ -69,14 +69,14 @@ namespace TH_WEB.Services
                 .Include(h => h.Reviews)
                 .Include(h => h.Rooms)
                 .FirstOrDefault(h => h.Id == id);
-        }
-
-        public IEnumerable<Hotel> GetTopRatedHotels(int count)
+        }        public IEnumerable<Hotel> GetTopRatedHotels(int count)
         {
             return _context.Hotels
                 .Include(h => h.Reviews)
                 .Include(h => h.Rooms)
+                .Where(h => h.Reviews.Any()) // Only hotels with reviews
                 .OrderByDescending(h => h.Reviews.Average(r => r.Rating))
+                .ThenByDescending(h => h.StarRating)
                 .Take(count)
                 .ToList();
         }

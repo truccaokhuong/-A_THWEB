@@ -581,6 +581,253 @@ namespace TH_WEB.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("TH_WEB.Models.Authorization.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Authorization.ResourceOwnership", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("GrantedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GrantedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OwnershipType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResourceType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ResourceOwnerships");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Authorization.RolePermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("GrantedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GrantedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("RolePermissions");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Authorization.UserActivity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("EntityId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserAgent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("UserProfileId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserProfileId");
+
+                    b.ToTable("UserActivities");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Authorization.UserPermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("GrantedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GrantedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserPermissions");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Authorization.UserProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Department")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("HireDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastLoginAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LoginCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Organization")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Position")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserProfiles");
+                });
+
             modelBuilder.Entity("TH_WEB.Models.Booking", b =>
                 {
                     b.Property<int>("Id")
@@ -809,7 +1056,7 @@ namespace TH_WEB.Migrations
                         {
                             Id = 1,
                             CarTypeId = 1,
-                            CreatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(2055),
+                            CreatedAt = new DateTime(2025, 6, 10, 3, 23, 56, 115, DateTimeKind.Utc).AddTicks(5693),
                             DailyRate = 35.00m,
                             Description = "Fuel-efficient economy car",
                             DropoffLocationId = 1,
@@ -818,13 +1065,13 @@ namespace TH_WEB.Migrations
                             LocationId = 1,
                             Name = "Economy Sedan",
                             PickupLocationId = 1,
-                            UpdatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(2055)
+                            UpdatedAt = new DateTime(2025, 6, 10, 3, 23, 56, 115, DateTimeKind.Utc).AddTicks(5693)
                         },
                         new
                         {
                             Id = 2,
                             CarTypeId = 2,
-                            CreatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(2057),
+                            CreatedAt = new DateTime(2025, 6, 10, 3, 23, 56, 115, DateTimeKind.Utc).AddTicks(5696),
                             DailyRate = 60.00m,
                             Description = "Spacious SUV for families",
                             DropoffLocationId = 2,
@@ -833,7 +1080,7 @@ namespace TH_WEB.Migrations
                             LocationId = 2,
                             Name = "Standard SUV",
                             PickupLocationId = 2,
-                            UpdatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(2058)
+                            UpdatedAt = new DateTime(2025, 6, 10, 3, 23, 56, 115, DateTimeKind.Utc).AddTicks(5696)
                         });
                 });
 
@@ -1672,10 +1919,12 @@ namespace TH_WEB.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Latitude")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 8)
+                        .HasColumnType("decimal(10,8)");
 
                     b.Property<decimal>("Longitude")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(11, 8)
+                        .HasColumnType("decimal(11,8)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1863,6 +2112,7 @@ namespace TH_WEB.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -2004,10 +2254,12 @@ namespace TH_WEB.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal?>("CleanlinessRating")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(3, 2)
+                        .HasColumnType("decimal(3,2)");
 
                     b.Property<decimal?>("ComfortRating")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(3, 2)
+                        .HasColumnType("decimal(3,2)");
 
                     b.Property<string>("Comment")
                         .IsRequired()
@@ -2032,7 +2284,8 @@ namespace TH_WEB.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal?>("LocationRating")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(3, 2)
+                        .HasColumnType("decimal(3,2)");
 
                     b.Property<decimal>("Rating")
                         .HasColumnType("decimal(3,1)");
@@ -2054,7 +2307,8 @@ namespace TH_WEB.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal?>("ServiceRating")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(3, 2)
+                        .HasColumnType("decimal(3,2)");
 
                     b.Property<int?>("TravelPackageId")
                         .HasColumnType("int");
@@ -2073,7 +2327,8 @@ namespace TH_WEB.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("ValueForMoneyRating")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(3, 2)
+                        .HasColumnType("decimal(3,2)");
 
                     b.HasKey("Id");
 
@@ -2270,7 +2525,7 @@ namespace TH_WEB.Migrations
                             BreakfastPolicy = "Included",
                             CancellationPolicy = "Free cancellation within 24 hours.",
                             ChildCapacity = 0,
-                            CreatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(1974),
+                            CreatedAt = new DateTime(2025, 6, 10, 3, 23, 56, 115, DateTimeKind.Utc).AddTicks(5636),
                             Description = "A comfortable standard room with city view.",
                             DiscountedPrice = 0m,
                             Floor = "1",
@@ -2299,7 +2554,7 @@ namespace TH_WEB.Migrations
                             RoomNumber = "101",
                             RoomType = "Standard",
                             SquareMeters = 30,
-                            UpdatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(1974),
+                            UpdatedAt = new DateTime(2025, 6, 10, 3, 23, 56, 115, DateTimeKind.Utc).AddTicks(5636),
                             ViewType = "City"
                         },
                         new
@@ -2311,7 +2566,7 @@ namespace TH_WEB.Migrations
                             BreakfastPolicy = "Included",
                             CancellationPolicy = "Free cancellation within 24 hours.",
                             ChildCapacity = 1,
-                            CreatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(1980),
+                            CreatedAt = new DateTime(2025, 6, 10, 3, 23, 56, 115, DateTimeKind.Utc).AddTicks(5642),
                             Description = "Spacious deluxe room with ocean view.",
                             DiscountedPrice = 0m,
                             Floor = "10",
@@ -2340,7 +2595,7 @@ namespace TH_WEB.Migrations
                             RoomNumber = "102",
                             RoomType = "Deluxe",
                             SquareMeters = 35,
-                            UpdatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(1981),
+                            UpdatedAt = new DateTime(2025, 6, 10, 3, 23, 56, 115, DateTimeKind.Utc).AddTicks(5642),
                             ViewType = "Ocean"
                         },
                         new
@@ -2352,7 +2607,7 @@ namespace TH_WEB.Migrations
                             BreakfastPolicy = "Available for fee",
                             CancellationPolicy = "Free cancellation within 48 hours.",
                             ChildCapacity = 2,
-                            CreatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(1984),
+                            CreatedAt = new DateTime(2025, 6, 10, 3, 23, 56, 115, DateTimeKind.Utc).AddTicks(5645),
                             Description = "Luxury suite with separate living area.",
                             DiscountedPrice = 0m,
                             Floor = "5",
@@ -2381,7 +2636,7 @@ namespace TH_WEB.Migrations
                             RoomNumber = "501",
                             RoomType = "Suite",
                             SquareMeters = 50,
-                            UpdatedAt = new DateTime(2025, 6, 3, 8, 7, 30, 890, DateTimeKind.Utc).AddTicks(1984),
+                            UpdatedAt = new DateTime(2025, 6, 10, 3, 23, 56, 115, DateTimeKind.Utc).AddTicks(5645),
                             ViewType = "City"
                         });
                 });
@@ -2503,7 +2758,8 @@ namespace TH_WEB.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<decimal>("DiscountPercentage")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -2701,6 +2957,81 @@ namespace TH_WEB.Migrations
                         .IsRequired();
 
                     b.Navigation("Attraction");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Authorization.ResourceOwnership", b =>
+                {
+                    b.HasOne("TH_WEB.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Authorization.RolePermission", b =>
+                {
+                    b.HasOne("TH_WEB.Models.Authorization.Permission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Authorization.UserActivity", b =>
+                {
+                    b.HasOne("TH_WEB.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TH_WEB.Models.Authorization.UserProfile", null)
+                        .WithMany("Activities")
+                        .HasForeignKey("UserProfileId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Authorization.UserPermission", b =>
+                {
+                    b.HasOne("TH_WEB.Models.Authorization.Permission", "Permission")
+                        .WithMany("UserPermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TH_WEB.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Authorization.UserProfile", b =>
+                {
+                    b.HasOne("TH_WEB.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.Booking", b =>
@@ -2986,6 +3317,18 @@ namespace TH_WEB.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("Tags");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Authorization.Permission", b =>
+                {
+                    b.Navigation("RolePermissions");
+
+                    b.Navigation("UserPermissions");
+                });
+
+            modelBuilder.Entity("TH_WEB.Models.Authorization.UserProfile", b =>
+                {
+                    b.Navigation("Activities");
                 });
 
             modelBuilder.Entity("TH_WEB.Models.Booking", b =>

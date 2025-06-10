@@ -1,0 +1,415 @@
+@model TH_WEB.Models.CarRental
+
+@{
+    ViewData["Title"] = "Car Details - " + Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .car-hero {
+        background: linear-gradient(135deg, #003580 0%, #0071c2 100%);
+        color: white;
+        padding: 80px 0;
+        margin-bottom: 40px;
+    }
+    
+    .car-details-card {
+        border: 1px solid #e7ecf3;
+        border-radius: 12px;
+        background: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .car-image {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        background: #f5f5f5;
+    }
+    
+    .price-display {
+        background: #003580;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }
+    
+    .feature-badge {
+        background: #e8f5e8;
+        color: #2d5a2d;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        margin: 2px;
+        display: inline-block;
+    }
+    
+    .feature-badge.unavailable {
+        background: #f8f8f8;
+        color: #666;
+    }
+    
+    .location-badge {
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        margin: 4px;
+        display: inline-block;
+    }
+    
+    .btn-book {
+        background: #ff6b35;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 18px;
+        width: 100%;
+        margin-top: 20px;
+    }
+    
+    .btn-book:hover {
+        background: #e55a2b;
+        color: white;
+    }
+    
+    .info-section {
+        padding: 20px;
+    }
+    
+    .availability-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+    
+    .availability-badge.available {
+        background: #e8f5e8;
+        color: #2d5a2d;
+    }
+    
+    .availability-badge.unavailable {
+        background: #ffebee;
+        color: #c62828;
+    }
+</style>
+
+<div class="car-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-4 mb-3">@Model.Name</h1>
+                <p class="lead mb-4">@Model.Description</p>
+                <div class="d-flex align-items-center">
+                    <span class="availability-badge @(Model.IsAvailable ? "available" : "unavailable")">
+                        <i class="fas fa-@(Model.IsAvailable ? "check-circle" : "times-circle") mr-1"></i>
+                        @(Model.IsAvailable ? "Available" : "Currently Unavailable")
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="price-display">
+                    <h2 class="mb-0">$@Model.DailyRate.ToString("N0")</h2>
+                    <p class="mb-0">per day</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <!-- Car Image and Basic Info -->
+        <div class="col-lg-8">
+            <div class="car-details-card mb-4">
+                <div class="car-image d-flex align-items-center justify-content-center">
+                    <div class="text-center text-muted">
+                        <i class="fas fa-car fa-5x mb-3"></i>
+                        <p>Car Image</p>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h3 class="mb-3">Vehicle Details</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Car Type</h5>
+                            @if (Model.CarType != null)
+                            {
+                                <p><strong>@Model.CarType.Name</strong></p>
+                                <p class="text-muted">@Model.CarType.Description</p>
+                                
+                                <h6 class="mt-3">Specifications</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-users text-primary mr-2"></i> @Model.CarType.Seats seats</li>
+                                    <li><i class="fas fa-door-open text-primary mr-2"></i> @Model.CarType.Doors doors</li>
+                                    <li><i class="fas fa-tag text-primary mr-2"></i> @Model.CarType.Category</li>
+                                </ul>
+                            }
+                            else
+                            {
+                                <p class="text-muted">Car type information not available</p>
+                            }
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5>Features</h5>
+                            @if (Model.CarType != null)
+                            {
+                                <div class="mb-3">
+                                    <span class="feature-badge @(Model.CarType.HasAirConditioning ? "" : "unavailable")">
+                                        <i class="fas fa-snowflake mr-1"></i> Air Conditioning
+                                    </span>
+                                    <span class="feature-badge @(Model.CarType.HasAutomaticTransmission ? "" : "unavailable")">
+                                        <i class="fas fa-cog mr-1"></i> Automatic
+                                    </span>
+                                    <span class="feature-badge @(Model.CarType.HasGPS ? "" : "unavailable")">
+                                        <i class="fas fa-map-marker-alt mr-1"></i> GPS
+                                    </span>
+                                    <span class="feature-badge @(Model.CarType.HasBluetooth ? "" : "unavailable")">
+                                        <i class="fas fa-bluetooth mr-1"></i> Bluetooth
+                                    </span>
+                                    <span class="feature-badge @(Model.CarType.HasUSBPort ? "" : "unavailable")">
+                                        <i class="fas fa-usb mr-1"></i> USB Port
+                                    </span>
+                                    <span class="feature-badge @(Model.CarType.HasChildSeat ? "" : "unavailable")">
+                                        <i class="fas fa-baby mr-1"></i> Child Seat
+                                    </span>
+                                    <span class="feature-badge @(Model.CarType.HasLuggageSpace ? "" : "unavailable")">
+                                        <i class="fas fa-suitcase mr-1"></i> Luggage Space
+                                    </span>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">Feature information not available</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Location Information -->
+            <div class="car-details-card">
+                <div class="info-section">
+                    <h3 class="mb-3">Location Information</h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>Main Location</h6>
+                            @if (Model.Location != null)
+                            {
+                                <span class="location-badge">
+                                    <i class="fas fa-map-marker-alt mr-1"></i>
+                                    @Model.Location.Name
+                                </span>
+                                <p class="text-muted small mt-2">@Model.Location.Address</p>
+                            }
+                            else
+                            {
+                                <p class="text-muted">Location not specified</p>
+                            }
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <h6>Pickup Location</h6>
+                            @if (Model.PickupLocation != null)
+                            {
+                                <span class="location-badge">
+                                    <i class="fas fa-play-circle mr-1"></i>
+                                    @Model.PickupLocation.Name
+                                </span>
+                                <p class="text-muted small mt-2">@Model.PickupLocation.Address</p>
+                            }
+                            else
+                            {
+                                <p class="text-muted">Pickup location not specified</p>
+                            }
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <h6>Drop-off Location</h6>
+                            @if (Model.DropoffLocation != null)
+                            {
+                                <span class="location-badge">
+                                    <i class="fas fa-stop-circle mr-1"></i>
+                                    @Model.DropoffLocation.Name
+                                </span>
+                                <p class="text-muted small mt-2">@Model.DropoffLocation.Address</p>
+                            }
+                            else
+                            {
+                                <p class="text-muted">Drop-off location not specified</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Booking Sidebar -->
+        <div class="col-lg-4">
+            <div class="car-details-card mb-4">
+                <div class="info-section">
+                    <h4 class="mb-3">Book This Car</h4>
+                    
+                    <div class="form-group">
+                        <label for="pickupDate">Pickup Date</label>
+                        <input type="date" class="form-control" id="pickupDate" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dropoffDate">Drop-off Date</label>
+                        <input type="date" class="form-control" id="dropoffDate" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pickupTime">Pickup Time</label>
+                        <input type="time" class="form-control" id="pickupTime" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dropoffTime">Drop-off Time</label>
+                        <input type="time" class="form-control" id="dropoffTime" />
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Daily Rate:</span>
+                        <span>$@Model.DailyRate.ToString("N2")</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Duration:</span>
+                        <span id="duration">1 day</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong id="totalPrice">$@Model.DailyRate.ToString("N2")</strong>
+                    </div>
+                    
+                    @if (Model.IsAvailable)
+                    {
+                        <button type="button" class="btn btn-book" onclick="bookCar(@Model.Id)">
+                            <i class="fas fa-calendar-check mr-2"></i>
+                            Book Now
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-secondary" disabled>
+                            <i class="fas fa-times-circle mr-2"></i>
+                            Currently Unavailable
+                        </button>
+                    }
+                </div>
+            </div>
+            
+            <!-- Extras -->
+            @if (Model.Extras != null && Model.Extras.Any())
+            {
+                <div class="car-details-card">
+                    <div class="info-section">
+                        <h4 class="mb-3">Available Extras</h4>                        @foreach (var extra in Model.Extras)
+                        {
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" value="@extra.Id" id="extra_@extra.Id">
+                                <label class="form-check-label" for="extra_@extra.Id">
+                                    <strong>@extra.Name</strong> (+$@extra.PricePerDay.ToString("N2")/day)
+                                    <br>
+                                    <small class="text-muted">@extra.Description</small>
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="@Url.Action("Index", "CarRental")" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Car Rentals
+            </a>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary ml-2">
+                <i class="fas fa-home mr-2"></i>
+                Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Set default dates
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            document.getElementById('pickupDate').value = today.toISOString().split('T')[0];
+            document.getElementById('dropoffDate').value = tomorrow.toISOString().split('T')[0];
+            document.getElementById('pickupTime').value = '09:00';
+            document.getElementById('dropoffTime').value = '17:00';
+            
+            // Calculate price when dates change
+            $('#pickupDate, #dropoffDate').change(function() {
+                calculatePrice();
+            });
+            
+            calculatePrice();
+        });
+        
+        function calculatePrice() {
+            const pickupDate = new Date(document.getElementById('pickupDate').value);
+            const dropoffDate = new Date(document.getElementById('dropoffDate').value);
+            const dailyRate = @Model.DailyRate;
+            
+            if (pickupDate && dropoffDate && dropoffDate > pickupDate) {
+                const timeDiff = dropoffDate.getTime() - pickupDate.getTime();
+                const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                
+                document.getElementById('duration').textContent = daysDiff + ' day' + (daysDiff > 1 ? 's' : '');
+                document.getElementById('totalPrice').textContent = '$' + (dailyRate * daysDiff).toFixed(2);
+            } else {
+                document.getElementById('duration').textContent = '1 day';
+                document.getElementById('totalPrice').textContent = '$' + dailyRate.toFixed(2);
+            }
+        }
+        
+        function bookCar(carId) {
+            const pickupDate = document.getElementById('pickupDate').value;
+            const dropoffDate = document.getElementById('dropoffDate').value;
+            const pickupTime = document.getElementById('pickupTime').value;
+            const dropoffTime = document.getElementById('dropoffTime').value;
+            
+            if (!pickupDate || !dropoffDate) {
+                alert('Please select pickup and drop-off dates');
+                return;
+            }
+            
+            if (new Date(dropoffDate) <= new Date(pickupDate)) {
+                alert('Drop-off date must be after pickup date');
+                return;
+            }
+            
+            // Here you would typically redirect to booking page or show booking modal
+            // For now, we'll just show an alert
+            alert('Booking functionality would be implemented here. Car ID: ' + carId);
+            
+            // Uncomment this line when booking controller is ready:
+            // window.location.href = '@Url.Action("Create", "Booking")' + '?carId=' + carId + '&pickup=' + pickupDate + '&dropoff=' + dropoffDate;
+        }
+    </script>
+}

@@ -1,0 +1,555 @@
+@model RoleDetailsViewModel
+@{
+    ViewData["Title"] = "Role Details - " + Model.Role.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+/* Loading spinner fixes */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3182ce;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Bootstrap spinner for buttons */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.125em;
+}
+</style>
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Role Details - @Model.Role.Name</h1>        <div class="d-none d-sm-inline-block">
+            <a href="@Url.Action("Roles", "Admin")" class="btn btn-sm btn-primary shadow-sm no-loading">
+                <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Roles
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Role Information Card -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Role Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-user-tag fa-2x text-white"></i>
+                        </div>
+                        <h4 class="font-weight-bold">@Model.Role.Name</h4>
+                        
+                        @if (Model.Role.Name == "SuperAdmin")
+                        {
+                            <span class="badge badge-danger">System Role</span>
+                        }
+                        else if (Model.Role.Name == "Admin")
+                        {
+                            <span class="badge badge-warning">Admin Role</span>
+                        }
+                        else if (Model.Role.Name.Contains("Manager"))
+                        {
+                            <span class="badge badge-info">Management Role</span>
+                        }
+                        else if (Model.Role.Name.Contains("Staff"))
+                        {
+                            <span class="badge badge-success">Staff Role</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-secondary">User Role</span>
+                        }
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p class="mb-0"><strong>Role ID:</strong></p>
+                            <p class="text-muted small">@Model.Role.Id</p>
+                        </div>
+                        <div class="col-sm-6">                            <p class="mb-0"><strong>Total Users:</strong></p>
+                            <p class="text-muted">@Model.UsersInRole.Count</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p class="mb-0"><strong>Permissions:</strong></p>
+                            <p class="text-muted">@Model.Permissions.Count</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="mb-0"><strong>Type:</strong></p>
+                            <p class="text-muted">
+                                @if (Model.Role.Name == "SuperAdmin" || Model.Role.Name == "Admin")
+                                {
+                                    <span>System</span>
+                                }
+                                else
+                                {
+                                    <span>Custom</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Role Actions Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Role Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">                        <button type="button" class="list-group-item list-group-item-action" 
+                                data-bs-toggle="modal" data-bs-target="#addPermissionModal">
+                            <i class="fas fa-plus text-success mr-2"></i>
+                            Add Permission
+                        </button>
+                          <button type="button" class="list-group-item list-group-item-action no-loading" 
+                                onclick="exportRolePermissions('@Model.Role.Id')">
+                            <i class="fas fa-download text-info mr-2"></i>
+                            Export Permissions
+                        </button>
+                        
+                        @if (Model.Role.Name != "SuperAdmin" && Model.Role.Name != "Admin")
+                        {
+                            <button type="button" class="list-group-item list-group-item-action no-loading" 
+                                    onclick="cloneRole('@Model.Role.Id', '@Model.Role.Name')">
+                                <i class="fas fa-copy text-warning mr-2"></i>
+                                Clone Role
+                            </button>
+                            
+                            <button type="button" class="list-group-item list-group-item-action no-loading" 
+                                    onclick="deleteRole('@Model.Role.Id', '@Model.Role.Name', @Model.UsersInRole.Count)">
+                                <i class="fas fa-trash text-danger mr-2"></i>
+                                Delete Role
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role Permissions and Users -->
+        <div class="col-xl-8 col-lg-7">
+            <!-- Permissions Section -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">                    <h6 class="m-0 font-weight-bold text-primary">Role Permissions (@Model.Permissions.Count)</h6>                    <button type="button" class="btn btn-sm btn-success no-loading" data-bs-toggle="modal" data-bs-target="#addPermissionModal">
+                        <i class="fas fa-plus"></i> Add Permission
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (Model.Permissions.Any())
+                    {
+                        <!-- Permissions by Category -->
+                        @foreach (var categoryGroup in Model.Permissions.GroupBy(p => p.Category))
+                        {
+                            <div class="mb-4">
+                                <h6 class="text-primary border-bottom pb-2">
+                                    <i class="fas fa-folder mr-1"></i>
+                                    @categoryGroup.Key (@categoryGroup.Count())
+                                </h6>
+                                <div class="row">
+                                    @foreach (var permission in categoryGroup)
+                                    {
+                                        <div class="col-md-6 mb-2">
+                                            <div class="card border-left-success">
+                                                <div class="card-body py-2 px-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <strong class="small">@permission.Name</strong>
+                                                            <br>
+                                                            <small class="text-muted">@permission.Description</small>
+                                                        </div>
+                                                        @if (Model.Role.Name != "SuperAdmin")
+                                                        {                                                            <button type="button" class="btn btn-sm btn-outline-danger no-loading" 
+                                                                    onclick="removePermission('@Model.Role.Id', '@permission.Name')" 
+                                                                    title="Remove Permission">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-exclamation-circle fa-3x text-gray-300 mb-3"></i>
+                            <h5 class="text-gray-600">No Permissions Assigned</h5>                            <p class="text-muted">This role doesn't have any permissions assigned yet.</p>                            <button type="button" class="btn btn-primary no-loading" data-bs-toggle="modal" data-bs-target="#addPermissionModal">
+                                <i class="fas fa-plus"></i> Add First Permission
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Users with this Role -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Users with this Role (@Model.UsersInRole.Count)</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.UsersInRole.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in Model.UsersInRole)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mr-2" 
+                                                         style="width: 32px; height: 32px;">
+                                                        <span class="text-white font-weight-bold small">
+                                                            @(user.FirstName?.Substring(0, 1).ToUpper() ?? "U")
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <strong>@user.FirstName @user.LastName</strong>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @user.Email
+                                                @if (user.EmailConfirmed)
+                                                {
+                                                    <i class="fas fa-check-circle text-success ml-1" title="Email Verified"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (user.IsActive)
+                                                {
+                                                    <span class="badge badge-success">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-danger">Inactive</span>
+                                                }
+                                            </td>
+                                            <td>@user.CreatedAt.ToString("MM/dd/yyyy")</td>
+                                            <td>                                                <div class="btn-group" role="group">
+                                                    <a href="@Url.Action("UserDetails", "Admin", new { id = user.Id })" 
+                                                       class="btn btn-sm btn-primary no-loading" title="View User">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    @if (Model.Role.Name != "SuperAdmin")
+                                                    {                                                        <button type="button" class="btn btn-sm btn-warning no-loading" 
+                                                                onclick="removeUserFromRole('@user.Id', '@Model.Role.Name')" 
+                                                                title="Remove from Role">
+                                                            <i class="fas fa-user-minus"></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-users fa-3x text-gray-300 mb-3"></i>
+                            <h5 class="text-gray-600">No Users Assigned</h5>
+                            <p class="text-muted">No users have been assigned to this role yet.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Permission Modal -->
+<div class="modal fade" id="addPermissionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">            <div class="modal-header">
+                <h5 class="modal-title">Add Permission to @Model.Role.Name</h5>
+                <button type="button" class="close" data-bs-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Available Permissions</label>
+                    <div class="row">
+                        @foreach (var categoryGroup in Model.AvailablePermissions.Where(p => !Model.Permissions.Any(rp => rp.Id == p.Id)).GroupBy(p => p.Category))
+                        {
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-primary">@categoryGroup.Key</h6>
+                                @foreach (var permission in categoryGroup)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                               value="@permission.Name" id="permission_@permission.Id">
+                                        <label class="form-check-label small" for="permission_@permission.Id">
+                                            <strong>@permission.Name</strong>
+                                            <br>
+                                            <span class="text-muted">@permission.Description</span>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>            <div class="modal-footer">                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success no-loading" onclick="addSelectedPermissions('@Model.Role.Id')">
+                    Add Selected Permissions
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>        function removePermission(roleId, permissionName) {
+            if (confirm(`Are you sure you want to remove the permission "${permissionName}" from this role?`)) {
+                // Find the button that was clicked
+                const button = event.target.closest('button');
+                const originalHtml = button.innerHTML;
+                
+                // Show loading state
+                button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+                button.disabled = true;
+                
+                fetch('/Admin/RevokePermissionFromRole', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        roleId: roleId,
+                        permissionName: permissionName
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert('Permission removed successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while removing the permission');
+                })
+                .finally(() => {
+                    // Restore button state
+                    button.innerHTML = originalHtml;
+                    button.disabled = false;
+                });
+            }
+        }
+
+        function removeUserFromRole(userId, roleName) {
+            if (confirm(`Are you sure you want to remove this user from the "${roleName}" role?`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("RemoveRole", "Admin")';
+                
+                const userIdInput = document.createElement('input');
+                userIdInput.type = 'hidden';
+                userIdInput.name = 'userId';
+                userIdInput.value = userId;
+                
+                const roleNameInput = document.createElement('input');
+                roleNameInput.type = 'hidden';
+                roleNameInput.name = 'roleName';
+                roleNameInput.value = roleName;
+                
+                form.appendChild(userIdInput);
+                form.appendChild(roleNameInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }        function addSelectedPermissions(roleId) {
+            const checkboxes = document.querySelectorAll('#addPermissionModal input[type="checkbox"]:checked');
+            const selectedPermissions = Array.from(checkboxes).map(cb => cb.value);
+            
+            if (selectedPermissions.length === 0) {
+                alert('Please select at least one permission to add.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to add ${selectedPermissions.length} permission(s) to this role?`)) {
+                // Prevent any auto-loading overlays from site.js
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Get button reference properly
+                const button = document.querySelector('#addPermissionModal .btn-success');
+                const originalText = button.textContent;
+                
+                // Clear any existing loading overlays immediately
+                $('#loading-overlay').remove();
+                $('.loading-spinner').remove();
+                if (typeof hideLoadingOverlay === 'function') {
+                    hideLoadingOverlay();
+                }
+                
+                // Show loading state on button only
+                button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Adding...';
+                button.disabled = true;
+                button.classList.add('no-loading'); // Prevent site.js from adding overlay
+                
+                // Add each permission
+                const promises = selectedPermissions.map(permission => {
+                    return fetch('/Admin/GrantPermissionToRole', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            roleId: roleId,
+                            permissionName: permission
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        console.error('API call failed:', error);
+                        return { success: false, message: error.message };
+                    });
+                });
+                
+                Promise.all(promises)
+                .then(results => {
+                    const allSuccessful = results.every(result => result.success);
+                    if (allSuccessful) {
+                        alert('Permissions added successfully!');
+                        // Close modal before reload
+                        $('#addPermissionModal').modal('hide');
+                        location.reload();
+                    } else {
+                        const errors = results.filter(r => !r.success).map(r => r.message).join(', ');
+                        alert('Some permissions failed to add: ' + errors);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while adding permissions');
+                })
+                .finally(() => {
+                    // Always restore button state
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    button.classList.remove('no-loading');
+                    
+                    // Ensure all loading elements are cleaned up
+                    $('#loading-overlay').remove();
+                    $('.loading-spinner').remove();
+                    if (typeof hideLoadingOverlay === 'function') {
+                        hideLoadingOverlay();
+                    }
+                });
+            }
+        }
+
+        function exportRolePermissions(roleId) {
+            // Implementation for exporting role permissions would go here
+            alert('Export role permissions functionality would be implemented here');
+        }
+
+        function cloneRole(roleId, roleName) {
+            const newRoleName = prompt(`Enter a name for the cloned role (based on "${roleName}"):`);
+            if (newRoleName && newRoleName.trim()) {
+                // Implementation for cloning role would go here
+                alert(`Clone role functionality would be implemented here. New role name: ${newRoleName}`);
+            }
+        }
+
+        function deleteRole(roleId, roleName, userCount) {
+            if (userCount > 0) {
+                alert(`Cannot delete role "${roleName}" because it has ${userCount} assigned users. Please reassign users first.`);
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete the role "${roleName}"? This action cannot be undone.`)) {
+                // Implementation for deleting role would go here
+                alert(`Delete role functionality would be implemented here`);
+            }
+        }        // Initialize tooltips
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            
+            // Immediately clear any loading states on page load
+            $('#loading-overlay').remove();
+            $('.loading-spinner').remove();
+            $('button').prop('disabled', false);
+            
+            // Hide any loading overlays when page loads
+            if (typeof hideLoadingOverlay === 'function') {
+                hideLoadingOverlay();
+            }
+            
+            // Prevent site.js from adding loading overlay to buttons with 'no-loading' class
+            $(document).on('click', '.no-loading', function(e) {
+                e.stopImmediatePropagation();
+            });
+            
+            // Additional cleanup every 5 seconds to prevent stuck loading states
+            setInterval(function() {
+                if ($('#loading-overlay').is(':visible')) {
+                    console.warn('Cleaning up stuck loading overlay');
+                    $('#loading-overlay').remove();
+                }
+            }, 5000);
+        });
+    </script>
+}

@@ -15,9 +15,7 @@ namespace TH_WEB.Services
         public CarRentalService(ApplicationDbContext context)
         {
             _context = context;
-        }
-
-        public async Task<IEnumerable<CarRental>> GetAllAsync()
+        }        public async Task<IEnumerable<CarRental>> GetAllAsync()
         {
             return await _context.CarRentals
                 .Include(cr => cr.CarType)
@@ -25,10 +23,10 @@ namespace TH_WEB.Services
                 .Include(cr => cr.PickupLocation)
                 .Include(cr => cr.DropoffLocation)
                 .Where(cr => cr.IsActive)
+                .OrderBy(cr => cr.Name)
+                .AsSplitQuery() // Use split queries to avoid cartesian explosion
                 .ToListAsync();
-        }
-
-        public async Task<CarRental?> GetByIdAsync(int id)
+        }public async Task<CarRental?> GetByIdAsync(int id)
         {
             return await _context.CarRentals
                 .Include(cr => cr.CarType)
@@ -37,6 +35,7 @@ namespace TH_WEB.Services
                 .Include(cr => cr.DropoffLocation)
                 .Include(cr => cr.CarRentalBookings)
                 .Include(cr => cr.Extras)
+                .AsSplitQuery() // Use split queries to avoid cartesian explosion
                 .FirstOrDefaultAsync(cr => cr.Id == id && cr.IsActive);
         }
 
@@ -54,9 +53,7 @@ namespace TH_WEB.Services
             if (category.HasValue)
             {
                 query = query.Where(cr => cr.CarType.Category == category.Value);
-            }
-
-            // Filter out cars that are booked during the requested period
+            }            // Filter out cars that are booked during the requested period
             query = query.Where(cr => !cr.CarRentalBookings.Any(
                 b => b.Status != BookingStatus.Cancelled &&
                      ((startDate >= b.StartDate && startDate < b.EndDate) ||
@@ -64,7 +61,7 @@ namespace TH_WEB.Services
                       (startDate <= b.StartDate && endDate >= b.EndDate))
             ));
 
-            return await query.ToListAsync();
+            return await query.OrderBy(cr => cr.DailyRate).ToListAsync();
         }
 
         public async Task<decimal> CalculatePriceAsync(int carRentalId, DateTime startDate, DateTime endDate)
@@ -133,14 +130,16 @@ namespace TH_WEB.Services
                 .Include(c => c.CarType)
                 .Include(c => c.Location)
                 .FirstOrDefaultAsync(c => c.Id == id);
-        }
-
-        public async Task<IEnumerable<CarRental>> GetAvailableCarRentalsAsync()
+        }        public async Task<IEnumerable<CarRental>> GetAvailableCarRentalsAsync()
         {
             return await _context.CarRentals
+                .Include(c => c.CarType)
+                .Include(c => c.Location)
                 .Include(c => c.PickupLocation)
                 .Include(c => c.DropoffLocation)
                 .Where(c => c.IsActive && c.IsAvailable)
+                .OrderBy(c => c.Name)
+                .AsSplitQuery() // Use split queries to avoid cartesian explosion
                 .ToListAsync();
         }
     }
